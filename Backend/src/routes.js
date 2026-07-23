@@ -11,7 +11,7 @@ import { clientRoutes } from './modules/client/client.routes.js';
 import { salesRoutes } from './modules/sales/sales.routes.js';
 
 export const routes = Router();
-
+// solo los administradores podrán tener acceso a todas las rutas del UserRoutes
 routes.use('/users', verifyToken(['administrador']),userRoutes);
 routes.use('/auth', authRoutes);
 routes.use('/companies', verifyToken(['administrador']), companyRoutes);
