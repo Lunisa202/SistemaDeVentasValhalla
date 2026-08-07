@@ -2,12 +2,28 @@ import { Sequelize } from 'sequelize-typescript';
 import { environment } from './environment.js';
 import { logger } from '../common/logger.js';
 
+// Model imports
+import { Role } from '../modules/catalog/models/role.model.js';
+import { DocumentType } from '../modules/catalog/models/document-type.model.js';
+import { PaymentMethod } from '../modules/catalog/models/payment-method.model.js';
+import { ProductCategory } from '../modules/catalog/models/product-category.model.js';
+import { Company } from '../modules/company/company.model.js';
+import { User } from '../modules/user/user.model.js';
+import { Provider } from '../modules/provider/provider.model.js';
+import { Client } from '../modules/client/client.model.js';
+import { Product } from '../modules/product/product.model.js';
+import { Purchase } from '../modules/purchase/purchase.model.js';
+import { PurchaseDetail } from '../modules/purchase/purchase-detail.model.js';
+import { Sale } from '../modules/sale/sale.model.js';
+import { SaleDetail } from '../modules/sale/sale-detail.model.js';
+import { RefreshToken } from '../modules/auth/refresh-token.model.js';
+
 /**
  * Sequelize instance configured for PostgreSQL.
  * Uses sequelize-typescript which allows decorators in models.
  *
- * The `models` array will be populated as we create model files.
- * sequelize-typescript auto-discovers models when you pass the path.
+ * The `models` array registers all model classes so Sequelize
+ * knows about them and their relationships.
  */
 export const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -19,9 +35,25 @@ export const sequelize = new Sequelize({
   logging: environment.NODE_ENV === 'development'
     ? (msg) => logger.debug(msg)
     : false,
+  models: [
+    Role,
+    DocumentType,
+    PaymentMethod,
+    ProductCategory,
+    Company,
+    User,
+    Provider,
+    Client,
+    Product,
+    Purchase,
+    PurchaseDetail,
+    Sale,
+    SaleDetail,
+    RefreshToken,
+  ],
   define: {
     timestamps: true,
-    underscored: true,     // camelCase in JS → snake_case in DB
+    underscored: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   },
