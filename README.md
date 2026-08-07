@@ -498,3 +498,86 @@ Todas tienen `name` (identificador interno en inglés) y `display_name` (etiquet
 | Email único por usuario | `UNIQUE` constraint en `user.email` |
 | RUC único por empresa | `UNIQUE` constraint en `company.tax_id` |
 | Código único por producto | `UNIQUE` constraint en `product.code` |
+
+---
+
+## Modelos Sequelize-TypeScript
+
+### ¿Cómo se definen los modelos?
+
+El proyecto usa `sequelize-typescript` que permite definir modelos con **decoradores** (anotaciones sobre clases y propiedades). Cada modelo es una clase TypeScript que extiende `Model` y representa una tabla de la base de datos.
+
+### Ejemplo de modelo
+
+```typescript
+@Table({ tableName: 'product', timestamps: true, createdAt: 'created_at', updatedAt: 'updated_at' })
+export class Product extends Model {
+  @Column({ type: DataType.UUID, primaryKey: true, defaultValue: DataType.UUIDV4 })
+  declare id: string;
+
+  @Column({ type: DataType.STRING(100), allowNull: false })
+  declare name: string;
+
+  @ForeignKey(() => ProductCategory)
+  @Column({ type: DataType.INTEGER, allowNull: false, field: 'category_id' })
+  declare categoryId: number;
+
+  @BelongsTo(() => ProductCategory)
+  declare category: ProductCategory;
+}
+```
+
+### Decoradores utilizados
+
+| Decorador | Propósito |
+|-----------|-----------|
+| `@Table` | Registra la clase como un modelo Sequelize y configura nombre de tabla y timestamps |
+| `@Column` | Define una columna con su tipo, restricciones y mapeo a snake_case |
+| `@ForeignKey(() => Model)` | Marca una columna como clave foránea hacia otro modelo |
+| `@BelongsTo(() => Model)` | Relación muchos-a-uno (este modelo pertenece a otro) |
+| `@HasMany(() => Model)` | Relación uno-a-muchos (este modelo tiene muchos hijos) |
+
+### Convenciones
+
+| Aspecto | Convención |
+|---------|-----------|
+| Propiedades en TypeScript | camelCase (`firstName`, `salePrice`) |
+| Columnas en PostgreSQL | snake_case (`first_name`, `sale_price`) |
+| Mapeo automático | `field: 'sale_price'` en `@Column` o `underscored: true` global |
+| Tipos nullable | `declare phone: string \| null` |
+| Columnas generadas (BD) | Se declaran como `readonly` sin setter |
+| `declare` vs `=` | Siempre `declare` (Sequelize maneja la inicialización internamente) |
+
+### Registro de modelos
+
+Todos los modelos se registran en `src/config/database.ts` dentro del array `models`:
+
+```typescript
+export const sequelize = new Sequelize({
+  // ...config
+  models: [Role, DocumentType, PaymentMethod, ProductCategory, Company,
+           User, Provider, Client, Product, Purchase, PurchaseDetail,
+           Sale, SaleDetail, RefreshToken],
+});
+```
+
+Esto activa las relaciones declaradas con decoradores y permite que Sequelize resuelva includes/joins automáticamente.
+
+### Listado de modelos
+
+| Módulo | Modelo | Tabla | Relaciones |
+|--------|--------|-------|------------|
+| catalog | `Role` | role | HasMany → User |
+| catalog | `DocumentType` | document_type | — |
+| catalog | `PaymentMethod` | payment_method | — |
+| catalog | `ProductCategory` | product_category | HasMany → Product |
+| company | `Company` | company | HasMany → Provider |
+| user | `User` | user | BelongsTo → Role, DocumentType |
+| provider | `Provider` | provider | BelongsTo → DocumentType, Company |
+| client | `Client` | client | BelongsTo → DocumentType |
+| product | `Product` | product | BelongsTo → ProductCategory |
+| purchase | `Purchase` | purchase | BelongsTo → User, Provider · HasMany → PurchaseDetail |
+| purchase | `PurchaseDetail` | purchase_detail | BelongsTo → Purchase, Product |
+| sale | `Sale` | sale | BelongsTo → Client, User, PaymentMethod · HasMany → SaleDetail |
+| sale | `SaleDetail` | sale_detail | BelongsTo → Sale, Product |
+| auth | `RefreshToken` | refresh_token | BelongsTo → User |
