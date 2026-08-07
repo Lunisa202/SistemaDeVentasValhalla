@@ -19,7 +19,6 @@ Sistema completo de punto de venta (POS) con gestión de inventario, compras, ve
 SistemaWebVentasValhalla/
 ├── api/                 → Backend (Express + TypeScript)
 ├── web/                 → Frontend (Next.js — por implementar)
-├── .kiro/steering/      → Reglas del proyecto y plan de tareas
 ├── docker-compose.yml   → Orquestación de servicios (por implementar)
 └── README.md            → Este archivo
 ```
