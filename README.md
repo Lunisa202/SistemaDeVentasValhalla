@@ -81,6 +81,145 @@ api/src/
 
 ---
 
+## API Endpoints
+
+### Autenticación
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| POST | `/auth/login` | Login (devuelve access token + cookie refresh) | No |
+| POST | `/auth/refresh` | Renovar access token (usa cookie) | No |
+| POST | `/auth/logout` | Cerrar sesión (revoca refresh token) | No |
+
+### Catálogos (públicos)
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/catalog/roles` | Listar roles | No |
+| GET | `/catalog/document-types` | Listar tipos de documento | No |
+| GET | `/catalog/payment-methods` | Listar métodos de pago | No |
+| GET | `/catalog/categories` | Listar categorías de producto | No |
+| POST | `/catalog/categories` | Crear categoría | Admin |
+| PATCH | `/catalog/categories/:id` | Actualizar categoría | Admin |
+| DELETE | `/catalog/categories/:id` | Eliminar categoría | Admin |
+
+### Usuarios
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/users` | Listar usuarios (paginado) | Admin |
+| GET | `/users/:id` | Obtener usuario por ID | Admin |
+| POST | `/users` | Crear usuario | Admin |
+| PATCH | `/users/:id` | Actualizar usuario | Admin |
+| DELETE | `/users/:id` | Desactivar usuario (soft delete) | Admin |
+
+### Empresas
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/companies` | Listar empresas (paginado) | Admin |
+| GET | `/companies/:id` | Obtener empresa por ID | Admin |
+| POST | `/companies` | Crear empresa | Admin |
+| PATCH | `/companies/:id` | Actualizar empresa | Admin |
+| DELETE | `/companies/:id` | Desactivar empresa | Admin |
+
+### Proveedores
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/providers` | Listar proveedores (paginado, filtro por company_id) | Admin |
+| GET | `/providers/:id` | Obtener proveedor por ID | Admin |
+| POST | `/providers` | Crear proveedor | Admin |
+| PATCH | `/providers/:id` | Actualizar proveedor | Admin |
+| DELETE | `/providers/:id` | Desactivar proveedor | Admin |
+
+### Clientes
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/clients` | Listar clientes (paginado, búsqueda) | Admin/Seller |
+| GET | `/clients/:id` | Obtener cliente por ID | Admin/Seller |
+| POST | `/clients` | Crear cliente | Admin/Seller |
+| PATCH | `/clients/:id` | Actualizar cliente | Admin/Seller |
+| DELETE | `/clients/:id` | Desactivar cliente | Admin/Seller |
+
+### Productos
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/products` | Listar productos (paginado, filtros) | Admin |
+| GET | `/products/:id` | Obtener producto por ID | Admin |
+| GET | `/products/code/:code` | Buscar por código QR/barcode | Admin |
+| POST | `/products` | Crear producto | Admin |
+| PATCH | `/products/:id` | Actualizar producto | Admin |
+| DELETE | `/products/:id` | Desactivar producto | Admin |
+
+### Compras
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/purchases` | Listar compras (paginado) | Admin |
+| GET | `/purchases/:id` | Obtener compra con detalles | Admin |
+| POST | `/purchases` | Registrar compra (aumenta stock) | Admin |
+
+### Ventas
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/sales` | Listar ventas (paginado) | Admin/Seller |
+| GET | `/sales/:id` | Obtener venta con detalles | Admin/Seller |
+| POST | `/sales` | Registrar venta (disminuye stock) | Admin/Seller |
+
+> Todas las rutas están prefijadas con `/api/v1/`
+
+### Formato de respuesta estándar
+
+```json
+// Éxito
+{ "success": true, "data": {...}, "meta": { "page": 1, "limit": 20, "total": 50, "totalPages": 3 } }
+
+// Error
+{ "success": false, "error": { "code": "NOT_FOUND", "message": "Producto no encontrado" } }
+```
+
+---
+
+## Probar la API con Postman
+
+El archivo `api/postman/Valhalla-Sales-API.postman_collection.json` contiene una colección completa de pruebas.
+
+### Importar
+
+1. Abrir Postman → **Import** → seleccionar el archivo JSON
+2. La colección aparece con 10 carpetas organizadas por módulo
+
+### Orden de ejecución
+
+Ejecutar las carpetas en orden numérico (cada request guarda IDs en variables automáticamente):
+
+1. **Health Check** → verificar que el servidor está arriba
+2. **Auth** → login → guarda `accessToken`
+3. **Catalog** → endpoints públicos
+4. **Users** → crear vendedor → guarda `userId`
+5. **Companies** → crear empresa → guarda `companyId`
+6. **Providers** → crear proveedor → guarda `providerId`
+7. **Clients** → crear cliente → guarda `clientId`
+8. **Products** → crear producto → guarda `productId`
+9. **Purchases** → registrar compra (stock +20)
+10. **Sales** → registrar venta (stock -3)
+11. **Error Cases** → verificar 401, 400, 404
+
+### Levantar el servidor
+
+```bash
+cd api
+pnpm run dev
+```
+
+El servidor arranca en `http://localhost:3000`. La URL base en Postman ya está configurada como variable `{{baseUrl}}`.
+
+---
+
 ## Ejecutar migración de base de datos en PostgreSQL
 
 El proyecto usa **umzug** para manejar migraciones en TypeScript. Las migraciones crean todas las tablas, ENUMs, índices, constraints y triggers necesarios.
