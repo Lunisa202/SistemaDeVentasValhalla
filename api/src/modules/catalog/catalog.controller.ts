@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { CatalogService } from './catalog.service.js';
-import { sendSuccess, sendCreated, sendNoContent } from '../../common/helpers/response.js';
-import { NotFoundError } from '../../common/errors/index.js';
+import { CatalogService } from './catalog.service';
+import { sendSuccess, sendCreated, sendNoContent } from '../../common/helpers/response';
+import { NotFoundError } from '../../common/errors/index';
 
 /**
  * CatalogController — HTTP handlers for catalog/reference data.

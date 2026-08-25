@@ -1,8 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { environment } from '../../config/environment.js';
-import { UnauthorizedError } from '../errors/unauthorized.error.js';
-import { ForbiddenError } from '../errors/forbidden.error.js';
+import { environment } from '../../config/environment';
+import { UnauthorizedError } from '../errors/unauthorized.error';
+import { ForbiddenError } from '../errors/forbidden.error';
 
 /**
  * JWT payload structure after decoding.

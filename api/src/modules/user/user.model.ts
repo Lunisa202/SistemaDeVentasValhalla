@@ -1,6 +1,6 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Role } from '../catalog/models/role.model.js';
-import { DocumentType } from '../catalog/models/document-type.model.js';
+import { Role } from '../catalog/models/role.model';
+import { DocumentType } from '../catalog/models/document-type.model';
 
 /**
  * User model — system operators (admins, sellers).

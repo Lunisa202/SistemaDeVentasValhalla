@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { User } from '../user/user.model.js';
+import { User } from '../user/user.model';
 
 /**
  * RefreshToken model — stores JWT refresh tokens.

@@ -1,7 +1,8 @@
-import { ProductRepository } from './product.repository.js';
-import { NotFoundError } from '../../common/errors/not-found.error.js';
-import { ConflictError } from '../../common/errors/conflict.error.js';
-import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination.js';
+import { ProductRepository } from './product.repository';
+import { NotFoundError } from '../../common/errors/not-found.error';
+import { ConflictError } from '../../common/errors/conflict.error';
+import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination';
+import type { CreateProductDto, UpdateProductDto } from './product.dto';
 
 export class ProductService {
   constructor(private readonly repository = new ProductRepository()) {}
@@ -24,18 +25,18 @@ export class ProductService {
     return product;
   }
 
-  async create(data: { code: string; [key: string]: unknown }) {
+  async create(data: CreateProductDto) {
     const existing = await this.repository.findByCode(data.code);
     if (existing) throw new ConflictError('El código de producto ya existe');
-    return this.repository.create(data as any);
+    return this.repository.create(data);
   }
 
-  async update(id: string, data: Record<string, unknown>) {
-    if (data.code && typeof data.code === 'string') {
+  async update(id: string, data: UpdateProductDto) {
+    if (data.code) {
       const existing = await this.repository.findByCode(data.code);
       if (existing && existing.id !== id) throw new ConflictError('El código de producto ya existe');
     }
-    const product = await this.repository.update(id, data as any);
+    const product = await this.repository.update(id, data);
     if (!product) throw new NotFoundError('Producto');
     return this.repository.findById(id);
   }

@@ -1,12 +1,13 @@
-import { Purchase } from './purchase.model.js';
-import { PurchaseDetail } from './purchase-detail.model.js';
-import { Product } from '../product/product.model.js';
-import { User } from '../user/user.model.js';
-import { Provider } from '../provider/provider.model.js';
-import { sequelize } from '../../config/database.js';
-import { NotFoundError } from '../../common/errors/not-found.error.js';
-import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination.js';
-import { getOffset } from '../../common/helpers/pagination.js';
+import { Purchase } from './purchase.model';
+import { PurchaseDetail } from './purchase-detail.model';
+import { Product } from '../product/product.model';
+import { User } from '../user/user.model';
+import { Provider } from '../provider/provider.model';
+import { sequelize } from '../../config/database';
+import { NotFoundError } from '../../common/errors/not-found.error';
+import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination';
+import { getOffset } from '../../common/helpers/pagination';
+import { roundTo2 } from '../../common/helpers/math';
 
 interface CreatePurchaseInput {
   providerId: string;
@@ -25,7 +26,7 @@ export class PurchaseService {
   async create(userId: string, data: CreatePurchaseInput) {
     const result = await sequelize.transaction(async (t) => {
       // Calculate total
-      const total = data.products.reduce((acc, p) => acc + p.quantity * p.unitPrice, 0);
+      const total = roundTo2(data.products.reduce((acc, p) => acc + roundTo2(p.quantity * p.unitPrice), 0));
 
       // Create purchase header
       const purchase = await Purchase.create({
@@ -70,7 +71,7 @@ export class PurchaseService {
       ],
       limit: params.limit,
       offset: getOffset(params),
-      order: [['purchased_at', 'DESC']],
+      order: [['purchasedAt', 'DESC']],
     });
     return { data: rows, meta: buildPaginationMeta(count, params) };
   }

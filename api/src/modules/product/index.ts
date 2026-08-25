@@ -1,2 +1,2 @@
-export { productRoutes } from './product.routes.js';
-export { Product } from './product.model.js';
+export { productRoutes } from './product.routes';
+export { Product } from './product.model';

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { ZodSchema } from 'zod';
-import { ValidationError } from '../errors/validation.error.js';
+import { ValidationError } from '../errors/validation.error';
 
 /**
  * Schema validation middleware factory.

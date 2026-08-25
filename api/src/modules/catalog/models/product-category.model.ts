@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
-import { Product } from '../../product/product.model.js';
+import { Product } from '../../product/product.model';
 
 /**
  * ProductCategory model — product classification.

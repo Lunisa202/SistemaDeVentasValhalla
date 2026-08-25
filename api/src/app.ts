@@ -3,13 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { pinoHttp } from 'pino-http';
-import { environment } from './config/environment.js';
-import { logger } from './common/logger.js';
-import { routes } from './routes.js';
-import { errorHandler } from './common/middlewares/error-handler.js';
-import { notFoundHandler } from './common/middlewares/not-found-handler.js';
-import { setupSwagger } from './config/swagger.js';
-import { rateLimiter } from './common/middlewares/rate-limiter.js';
+import { environment } from './config/environment';
+import { logger } from './common/logger';
+import { routes } from './routes';
+import { errorHandler } from './common/middlewares/error-handler';
+import { notFoundHandler } from './common/middlewares/not-found-handler';
+import { setupSwagger } from './config/swagger';
+import { rateLimiter } from './common/middlewares/rate-limiter';
 
 export const app: Express = express();
 
@@ -29,7 +29,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ─── Logging ────────────────────────────────────────────────
-app.use(pinoHttp({ logger }));
+app.use(pinoHttp({
+  logger,
+  redact: {
+    paths: ['req.headers.authorization', 'req.headers.cookie'],
+    censor: '[REDACTED]',
+  },
+}));
 
 // ─── Swagger docs ───────────────────────────────────────────
 setupSwagger(app);

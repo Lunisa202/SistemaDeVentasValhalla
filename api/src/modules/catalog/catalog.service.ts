@@ -1,7 +1,7 @@
-import { Role } from './models/role.model.js';
-import { DocumentType } from './models/document-type.model.js';
-import { PaymentMethod } from './models/payment-method.model.js';
-import { ProductCategory } from './models/product-category.model.js';
+import { Role } from './models/role.model';
+import { DocumentType } from './models/document-type.model';
+import { PaymentMethod } from './models/payment-method.model';
+import { ProductCategory } from './models/product-category.model';
 
 /**
  * CatalogService — read-only access to reference tables.

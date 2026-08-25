@@ -1,14 +1,14 @@
 import { Router, type Router as RouterType } from 'express';
-import { catalogRoutes } from './modules/catalog/index.js';
-import { authRoutes } from './modules/auth/index.js';
-import { userRoutes } from './modules/user/index.js';
-import { companyRoutes } from './modules/company/index.js';
-import { providerRoutes } from './modules/provider/index.js';
-import { clientRoutes } from './modules/client/index.js';
-import { productRoutes } from './modules/product/index.js';
-import { purchaseRoutes } from './modules/purchase/index.js';
-import { saleRoutes } from './modules/sale/index.js';
-import { authGuard } from './common/middlewares/auth-guard.js';
+import { catalogRoutes } from './modules/catalog';
+import { authRoutes } from './modules/auth';
+import { userRoutes } from './modules/user';
+import { companyRoutes } from './modules/company';
+import { providerRoutes } from './modules/provider';
+import { clientRoutes } from './modules/client';
+import { productRoutes } from './modules/product';
+import { purchaseRoutes } from './modules/purchase';
+import { saleRoutes } from './modules/sale';
+import { authGuard } from './common/middlewares/auth-guard';
 
 export const routes: RouterType = Router();
 

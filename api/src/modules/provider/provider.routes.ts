@@ -1,8 +1,8 @@
 import { Router, type Router as RouterType } from 'express';
-import { ProviderController } from './provider.controller.js';
-import { asyncHandler } from '../../common/middlewares/async-handler.js';
-import { validateSchema } from '../../common/middlewares/validate-schema.js';
-import { createProviderSchema, updateProviderSchema } from './provider.schema.js';
+import { ProviderController } from './provider.controller';
+import { asyncHandler } from '../../common/middlewares/async-handler';
+import { validateSchema } from '../../common/middlewares/validate-schema';
+import { createProviderSchema, updateProviderSchema } from './provider.schema';
 
 export const providerRoutes: RouterType = Router();
 

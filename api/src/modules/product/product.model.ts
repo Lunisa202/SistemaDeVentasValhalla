@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { ProductCategory } from '../catalog/models/product-category.model.js';
+import { ProductCategory } from '../catalog/models/product-category.model';
 
 /**
  * Product model — items in inventory.

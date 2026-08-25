@@ -1,2 +1,2 @@
-export { companyRoutes } from './company.routes.js';
-export { Company } from './company.model.js';
+export { companyRoutes } from './company.routes';
+export { Company } from './company.model';

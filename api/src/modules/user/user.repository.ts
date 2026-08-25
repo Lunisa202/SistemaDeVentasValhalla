@@ -1,7 +1,8 @@
-import { User } from './user.model.js';
-import { Role } from '../catalog/models/role.model.js';
-import { DocumentType } from '../catalog/models/document-type.model.js';
-import { getOffset, type PaginationParams } from '../../common/helpers/pagination.js';
+import { User } from './user.model';
+import { Role } from '../catalog/models/role.model';
+import { DocumentType } from '../catalog/models/document-type.model';
+import { getOffset, type PaginationParams } from '../../common/helpers/pagination';
+import type { CreateUserDto, UpdateUserDto } from './user.dto';
 
 /**
  * UserRepository — data access layer for users.
@@ -42,14 +43,14 @@ export class UserRepository {
     return User.findOne({ where: { email } });
   }
 
-  async create(data: Partial<User>) {
+  async create(data: CreateUserDto & { password: string }) {
     return User.create(data as any);
   }
 
-  async update(id: string, data: Partial<User>) {
+  async update(id: string, data: UpdateUserDto) {
     const user = await User.findByPk(id);
     if (!user) return null;
-    return user.update(data);
+    return user.update(data as any);
   }
 
   async softDelete(id: string) {

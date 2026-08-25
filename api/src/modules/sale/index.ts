@@ -1,2 +1,3 @@
-export { Sale } from './sale.model.js';
-export { SaleDetail } from './sale-detail.model.js';
+export { Sale } from './sale.model';
+export { SaleDetail } from './sale-detail.model';
+export { saleRoutes} from './sale.routes';

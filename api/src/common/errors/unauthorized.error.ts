@@ -1,4 +1,4 @@
-import { AppError } from './app-error.js';
+import { AppError } from './app-error';
 
 /**
  * 401 Unauthorized error.

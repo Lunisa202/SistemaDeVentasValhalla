@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Valhalla Sales API",
-    "description": "Colección de pruebas para la API del Sistema de Ventas Valhalla",
+    "description": "Colección de pruebas para la API del Sistema de Ventas Valhalla.\nEjecutar en orden numérico — los scripts guardan IDs automáticamente.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,6 +12,7 @@
     { "key": "providerId", "value": "" },
     { "key": "clientId", "value": "" },
     { "key": "productId", "value": "" },
+    { "key": "productId2", "value": "" },
     { "key": "purchaseId", "value": "" },
     { "key": "saleId", "value": "" }
   ],
@@ -41,7 +42,7 @@
                   "const res = pm.response.json();",
                   "if (res.success && res.data.accessToken) {",
                   "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
-                  "  console.log('Token guardado correctamente');",
+                  "  console.log('Token guardado: ' + res.data.user.role);",
                   "}"
                 ]
               }
@@ -50,9 +51,7 @@
           "request": {
             "method": "POST",
             "url": "{{baseUrl}}/auth/login",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"admin@valhalla.com\",\n  \"password\": \"Admin123!\"\n}"
@@ -60,11 +59,34 @@
           }
         },
         {
+          "name": "POST /auth/login (credenciales incorrectas) → 401",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@valhalla.com\",\n  \"password\": \"wrongpassword\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /auth/login (email inválido) → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
           "name": "POST /auth/refresh",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/auth/refresh",
-            "description": "Usa la cookie httpOnly del login. En Postman, las cookies se envían automáticamente si el dominio coincide."
+            "url": "{{baseUrl}}/auth/refresh"
           }
         },
         {
@@ -81,36 +103,33 @@
       "item": [
         {
           "name": "GET /catalog/roles",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/catalog/roles"
-          }
+          "request": { "method": "GET", "url": "{{baseUrl}}/catalog/roles" }
         },
         {
           "name": "GET /catalog/document-types",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/catalog/document-types"
-          }
+          "request": { "method": "GET", "url": "{{baseUrl}}/catalog/document-types" }
         },
         {
           "name": "GET /catalog/payment-methods",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/catalog/payment-methods"
-          }
+          "request": { "method": "GET", "url": "{{baseUrl}}/catalog/payment-methods" }
         },
         {
           "name": "GET /catalog/categories",
+          "request": { "method": "GET", "url": "{{baseUrl}}/catalog/categories" }
+        },
+        {
+          "name": "POST /catalog/categories (sin token) → 401",
           "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/catalog/categories"
+            "method": "POST",
+            "url": "{{baseUrl}}/catalog/categories",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test\"\n}" }
           }
         }
       ]
     },
     {
-      "name": "3. Users (admin)",
+      "name": "3. Users",
       "item": [
         {
           "name": "POST /users (crear vendedor)",
@@ -141,13 +160,26 @@
           }
         },
         {
-          "name": "GET /users (listar)",
+          "name": "POST /users (email duplicado) → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Otro\",\n  \"lastName\": \"Usuario\",\n  \"identityDocument\": \"99999999\",\n  \"email\": \"carlos@valhalla.com\",\n  \"password\": \"Test123!\",\n  \"roleId\": 2,\n  \"documentTypeId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /users (listar paginado)",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/users?page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         },
         {
@@ -155,13 +187,19 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/users/{{userId}}",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         },
         {
-          "name": "PATCH /users/:id",
+          "name": "GET /users/:id (no existe) → 404",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/00000000-0000-0000-0000-000000000000",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "PATCH /users/:id (actualizar teléfono)",
           "request": {
             "method": "PATCH",
             "url": "{{baseUrl}}/users/{{userId}}",
@@ -169,10 +207,7 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"999111222\"\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"999111222\"\n}" }
           }
         },
         {
@@ -180,15 +215,13 @@
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/users/{{userId}}",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
     },
     {
-      "name": "4. Companies (admin)",
+      "name": "4. Companies",
       "item": [
         {
           "name": "POST /companies",
@@ -212,10 +245,19 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Distribuidora Lima SAC\",\n  \"taxId\": \"20512345678\"\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Distribuidora Lima SAC\",\n  \"taxId\": \"20512345678\"\n}" }
+          }
+        },
+        {
+          "name": "POST /companies (RUC duplicado) → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/companies",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Otra Empresa\",\n  \"taxId\": \"20512345678\"\n}" }
           }
         },
         {
@@ -223,15 +265,13 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/companies?page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
     },
     {
-      "name": "5. Providers (admin)",
+      "name": "5. Providers",
       "item": [
         {
           "name": "POST /providers",
@@ -255,26 +295,21 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"María\",\n  \"lastName\": \"García\",\n  \"identityDocument\": \"87654321\",\n  \"email\": \"maria@distribuidora.com\",\n  \"phone\": \"912345678\",\n  \"documentTypeId\": 1,\n  \"companyId\": \"{{companyId}}\"\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"María\",\n  \"lastName\": \"García\",\n  \"identityDocument\": \"87654321\",\n  \"email\": \"maria@distribuidora.com\",\n  \"phone\": \"912345678\",\n  \"documentTypeId\": 1,\n  \"companyId\": \"{{companyId}}\"\n}" }
           }
         },
         {
-          "name": "GET /providers",
+          "name": "GET /providers (filtrar por empresa)",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/providers?page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "url": "{{baseUrl}}/providers?company_id={{companyId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
     },
     {
-      "name": "6. Clients (admin/seller)",
+      "name": "6. Clients",
       "item": [
         {
           "name": "POST /clients",
@@ -298,29 +333,32 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Pedro\",\n  \"lastName\": \"Sánchez\",\n  \"phone\": \"945678123\",\n  \"email\": \"pedro@gmail.com\",\n  \"documentTypeId\": 1,\n  \"identityDocument\": \"11223344\"\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Pedro\",\n  \"lastName\": \"Sánchez\",\n  \"phone\": \"945678123\",\n  \"email\": \"pedro@gmail.com\",\n  \"documentTypeId\": 1,\n  \"identityDocument\": \"11223344\"\n}" }
           }
         },
         {
-          "name": "GET /clients (con búsqueda)",
+          "name": "GET /clients (buscar por nombre)",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/clients?page=1&limit=10&search=Pedro",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "url": "{{baseUrl}}/clients?search=Pedro",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /clients (buscar por documento)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/clients?search=11223344",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
     },
     {
-      "name": "7. Products (admin)",
+      "name": "7. Products",
       "item": [
         {
-          "name": "POST /products",
+          "name": "POST /products (producto 1)",
           "event": [
             {
               "listen": "test",
@@ -341,49 +379,85 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Coca Cola 500ml\",\n  \"code\": \"7751234000\",\n  \"salePrice\": 3.50,\n  \"stock\": 50,\n  \"categoryId\": 1\n}"
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Coca Cola 500ml\",\n  \"code\": \"7751234001\",\n  \"salePrice\": 3.50,\n  \"stock\": 100,\n  \"categoryId\": 1\n}" }
           }
         },
         {
-          "name": "GET /products",
+          "name": "POST /products (producto 2)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data.id) {",
+                  "  pm.collectionVariables.set('productId2', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/products",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Inca Kola 1.5L\",\n  \"code\": \"7751234002\",\n  \"salePrice\": 7.50,\n  \"stock\": 50,\n  \"categoryId\": 1\n}" }
+          }
+        },
+        {
+          "name": "POST /products (código duplicado) → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/products",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Duplicado\",\n  \"code\": \"7751234001\",\n  \"salePrice\": 5.00,\n  \"stock\": 10,\n  \"categoryId\": 1\n}" }
+          }
+        },
+        {
+          "name": "GET /products (listar)",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/products?page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         },
         {
-          "name": "GET /products/code/:code (QR scan)",
+          "name": "GET /products/code/:code (escaneo QR)",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/products/code/7751234000",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "url": "{{baseUrl}}/products/code/7751234001",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         },
         {
           "name": "GET /products (filtrar por categoría)",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/products?category_id=1&page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "url": "{{baseUrl}}/products?category_id=1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /products (buscar por nombre)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products?search=coca",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
     },
     {
-      "name": "8. Purchases (admin)",
+      "name": "8. Purchases (restock)",
       "item": [
         {
-          "name": "POST /purchases (compra con detalles)",
+          "name": "POST /purchases (compra de 2 productos)",
           "event": [
             {
               "listen": "test",
@@ -406,7 +480,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"providerId\": \"{{providerId}}\",\n  \"voucherType\": \"INVOICE\",\n  \"products\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 20,\n      \"unitPrice\": 2.50\n    }\n  ]\n}"
+              "raw": "{\n  \"providerId\": \"{{providerId}}\",\n  \"voucherType\": \"INVOICE\",\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 50, \"unitPrice\": 2.00 },\n    { \"productId\": \"{{productId2}}\", \"quantity\": 30, \"unitPrice\": 4.50 }\n  ]\n}"
             }
           }
         },
@@ -415,28 +489,32 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/purchases?page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         },
         {
-          "name": "GET /purchases/:id",
+          "name": "GET /purchases/:id (con detalles)",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/purchases/{{purchaseId}}",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Verificar stock aumentó (GET producto 1)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products/{{productId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
     },
     {
-      "name": "9. Sales (admin/seller)",
+      "name": "9. Sales (con IGV y descuentos)",
       "item": [
         {
-          "name": "POST /sales (venta con detalles)",
+          "name": "POST /sales (venta simple sin descuento)",
           "event": [
             {
               "listen": "test",
@@ -459,7 +537,67 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"voucherType\": \"RECEIPT\",\n  \"voucherCode\": \"B001-000001\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"products\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 3\n    }\n  ]\n}"
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"voucherType\": \"RECEIPT\",\n  \"voucherCode\": \"B001-000001\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"discountAmount\": 0,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 5, \"discountPercent\": 0 },\n    { \"productId\": \"{{productId2}}\", \"quantity\": 2, \"discountPercent\": 0 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /sales (con descuento por item 10%)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sales",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"voucherType\": \"RECEIPT\",\n  \"voucherCode\": \"B001-000002\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 2,\n  \"discountAmount\": 0,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 3, \"discountPercent\": 10 },\n    { \"productId\": \"{{productId2}}\", \"quantity\": 1, \"discountPercent\": 0 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /sales (con descuento global S/5)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sales",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": null,\n  \"voucherType\": \"TICKET\",\n  \"voucherCode\": \"T001-000001\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"discountAmount\": 5.00,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 10, \"discountPercent\": 0 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /sales (stock insuficiente) → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sales",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": null,\n  \"voucherType\": \"RECEIPT\",\n  \"voucherCode\": \"B001-000099\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"discountAmount\": 0,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 99999, \"discountPercent\": 0 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /sales (venta anónima - sin cliente)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sales",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voucherType\": \"TICKET\",\n  \"voucherCode\": \"T001-000002\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"discountAmount\": 0,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 2, \"discountPercent\": 0 }\n  ]\n}"
             }
           }
         },
@@ -468,19 +606,23 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/sales?page=1&limit=10",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         },
         {
-          "name": "GET /sales/:id",
+          "name": "GET /sales/:id (con desglose IGV)",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/sales/{{saleId}}",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "Verificar stock disminuyó (GET producto 1)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products/{{productId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
           }
         }
       ]
@@ -489,28 +631,15 @@
       "name": "10. Error Cases",
       "item": [
         {
-          "name": "GET sin token (401)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/users"
-          }
+          "name": "GET /users sin token → 401",
+          "request": { "method": "GET", "url": "{{baseUrl}}/users" }
         },
         {
-          "name": "POST login con credenciales incorrectas (401)",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/auth/login",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@valhalla.com\",\n  \"password\": \"wrongpassword\"\n}"
-            }
-          }
+          "name": "GET /ruta-inexistente → 404",
+          "request": { "method": "GET", "url": "{{baseUrl}}/ruta-que-no-existe" }
         },
         {
-          "name": "POST /products con datos inválidos (400)",
+          "name": "POST /products datos inválidos → 400",
           "request": {
             "method": "POST",
             "url": "{{baseUrl}}/products",
@@ -518,27 +647,22 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"code\": \"\",\n  \"salePrice\": -5\n}" }
+          }
+        },
+        {
+          "name": "POST /sales descuento > 100% → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sales",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"\",\n  \"code\": \"\",\n  \"salePrice\": -5\n}"
+              "raw": "{\n  \"voucherType\": \"RECEIPT\",\n  \"voucherCode\": \"B001-ERR\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"discountAmount\": 0,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 1, \"discountPercent\": 150 }\n  ]\n}"
             }
-          }
-        },
-        {
-          "name": "GET /users/:id inexistente (404)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/users/00000000-0000-0000-0000-000000000000",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
-            ]
-          }
-        },
-        {
-          "name": "GET ruta inexistente (404)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/ruta-que-no-existe"
           }
         }
       ]

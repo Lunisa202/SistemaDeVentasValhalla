@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { AuthService } from './auth.service.js';
-import { sendSuccess } from '../../common/helpers/response.js';
-import { environment } from '../../config/environment.js';
+import { AuthService } from './auth.service';
+import { sendSuccess } from '../../common/helpers/response';
+import { environment } from '../../config/environment';
 
 /**
  * AuthController — HTTP handlers for authentication.

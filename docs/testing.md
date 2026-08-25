@@ -282,15 +282,65 @@ api/postman/Valhalla-Sales-API.postman_collection.json
 |---|-------|--------------|
 | 1 | Health Check | Servidor arriba, respuesta `{ success: true }` |
 | 2 | Login admin | Obtener token, verificar estructura de respuesta |
+| 2b | Login credenciales incorrectas | 401, mensaje genérico |
+| 2c | Login email inválido | 400, VALIDATION_ERROR |
 | 3 | Catálogos públicos | Roles, tipos de documento, métodos de pago sin auth |
-| 4 | CRUD usuarios | Crear vendedor, listar, actualizar, soft delete |
-| 5 | CRUD empresas | Crear empresa con RUC, verificar unicidad |
-| 6 | CRUD proveedores | Crear proveedor vinculado a empresa |
-| 7 | CRUD clientes | Crear cliente, búsqueda por nombre |
-| 8 | CRUD productos | Crear producto, buscar por código QR |
-| 9 | Compra completa | Registrar compra → verificar stock aumenta |
-| 10 | Venta completa | Registrar venta → verificar stock disminuye |
-| 11 | Casos de error | 401 sin token, 400 datos inválidos, 404 no existe |
+| 3b | Crear categoría sin token | 401 |
+| 4 | CRUD usuarios | Crear vendedor, email duplicado (409), listar, actualizar, soft delete |
+| 4b | Usuario no existe | 404 |
+| 5 | CRUD empresas | Crear empresa, RUC duplicado (409), listar |
+| 6 | CRUD proveedores | Crear proveedor, filtrar por empresa |
+| 7 | CRUD clientes | Crear, buscar por nombre, buscar por documento |
+| 8 | CRUD productos | Crear 2 productos, código duplicado (409), buscar por QR, filtrar por categoría |
+| 9 | Compras (restock) | Compra con 2 productos → verificar stock aumentó |
+| 10 | Ventas sin descuento | Venta simple → verificar IGV calculado |
+| 10b | Ventas con descuento por item | 10% en un producto → subtotal ajustado |
+| 10c | Ventas con descuento global | S/5 de descuento global |
+| 10d | Venta stock insuficiente | 400, INSUFFICIENT_STOCK |
+| 10e | Venta anónima | Sin clientId → funciona con ticket |
+| 10f | Verificar stock disminuyó | GET producto después de ventas |
+| 11 | Descuento > 100% | 400, validación Zod |
+| 11b | Datos inválidos en producto | 400, campos requeridos |
+| 11c | Ruta inexistente | 404, ROUTE_NOT_FOUND |
+
+### Test cases detallados por módulo
+
+#### Auth
+| Test | Input | Expected | Status |
+|------|-------|----------|--------|
+| Login exitoso | email + password correctos | accessToken + user data | 200 |
+| Password incorrecto | email correcto + password mal | "Email o contraseña incorrectos" | 401 |
+| Email no existe | email inexistente | "Email o contraseña incorrectos" | 401 |
+| Email inválido (Zod) | "not-an-email" | VALIDATION_ERROR | 400 |
+| Refresh con cookie | Cookie refreshToken válida | Nuevo accessToken | 200 |
+| Refresh sin cookie | Sin cookie | "Refresh token no proporcionado" | 401 |
+
+#### Products
+| Test | Input | Expected | Status |
+|------|-------|----------|--------|
+| Crear producto | name, code, salePrice, stock, categoryId | Producto creado con UUID | 201 |
+| Código duplicado | Mismo code que otro producto | CONFLICT | 409 |
+| Precio negativo | salePrice: -5 | VALIDATION_ERROR | 400 |
+| Buscar por QR | GET /products/code/7751234001 | Producto encontrado | 200 |
+| QR no existe | GET /products/code/9999999 | NOT_FOUND | 404 |
+| Filtrar por categoría | ?category_id=1 | Solo productos de esa categoría | 200 |
+| Buscar por nombre | ?search=coca | Productos que contengan "coca" | 200 |
+
+#### Sales (con IGV)
+| Test | Input | Expected | Status |
+|------|-------|----------|--------|
+| Venta simple | 5x Coca (S/3.50) + 2x Inca (S/7.50) | subtotal: 32.50, taxBase: 27.54, taxAmount: 4.96, total: 32.50 | 201 |
+| Con descuento item 10% | 3x Coca con 10% off | subtotal: 9.45 (en vez de 10.50) | 201 |
+| Con descuento global S/5 | 10x Coca - S/5 | total: 30.00 (35 - 5) | 201 |
+| Stock insuficiente | quantity: 99999 | INSUFFICIENT_STOCK | 400 |
+| Venta anónima | Sin clientId | Venta creada sin cliente | 201 |
+| Descuento > 100% | discountPercent: 150 | VALIDATION_ERROR (max 100) | 400 |
+
+#### Purchases
+| Test | Input | Expected | Status |
+|------|-------|----------|--------|
+| Compra con 2 items | 50x prod1 + 30x prod2 | total calculado, stock +50 y +30 | 201 |
+| Producto no existe | productId inexistente | NOT_FOUND | 404 |
 
 ### Ejecución
 

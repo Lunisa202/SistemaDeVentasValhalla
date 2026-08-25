@@ -1,12 +1,13 @@
-import { ProviderRepository } from './provider.repository.js';
-import { NotFoundError } from '../../common/errors/not-found.error.js';
-import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination.js';
+import { ProviderRepository } from './provider.repository';
+import { NotFoundError } from '../../common/errors/not-found.error';
+import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination';
+import type { CreateProviderDto, UpdateProviderDto } from './provider.dto';
 
 export class ProviderService {
   constructor(private readonly repository = new ProviderRepository()) {}
 
-  async getAll(params: PaginationParams, companyId?: string) {
-    const { rows, count } = await this.repository.findAll(params, { isActive: true, companyId });
+  async getAll(params: PaginationParams, companyId?: string, search?: string) {
+    const { rows, count } = await this.repository.findAll(params, { isActive: true, companyId, search });
     return { data: rows, meta: buildPaginationMeta(count, params) };
   }
 
@@ -16,12 +17,12 @@ export class ProviderService {
     return provider;
   }
 
-  async create(data: Record<string, unknown>) {
-    return this.repository.create(data as any);
+  async create(data: CreateProviderDto) {
+    return this.repository.create(data);
   }
 
-  async update(id: string, data: Record<string, unknown>) {
-    const provider = await this.repository.update(id, data as any);
+  async update(id: string, data: UpdateProviderDto) {
+    const provider = await this.repository.update(id, data);
     if (!provider) throw new NotFoundError('Proveedor');
     return this.repository.findById(id);
   }

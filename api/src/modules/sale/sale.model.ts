@@ -1,8 +1,8 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
-import { Client } from '../client/client.model.js';
-import { User } from '../user/user.model.js';
-import { PaymentMethod } from '../catalog/models/payment-method.model.js';
-import { SaleDetail } from './sale-detail.model.js';
+import { Client } from '../client/client.model';
+import { User } from '../user/user.model';
+import { PaymentMethod } from '../catalog/models/payment-method.model';
+import { SaleDetail } from './sale-detail.model';
 
 /**
  * Sale model — customer transactions.
@@ -82,6 +82,37 @@ export class Sale extends Model {
     field: 'payment_method_id',
   })
   declare paymentMethodId: number;
+
+  @Column({
+    type: DataType.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
+  })
+  declare subtotal: number;
+
+  @Column({
+    type: DataType.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
+    field: 'discount_amount',
+  })
+  declare discountAmount: number;
+
+  @Column({
+    type: DataType.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
+    field: 'tax_base',
+  })
+  declare taxBase: number;
+
+  @Column({
+    type: DataType.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
+    field: 'tax_amount',
+  })
+  declare taxAmount: number;
 
   @Column({
     type: DataType.DECIMAL(10, 2),

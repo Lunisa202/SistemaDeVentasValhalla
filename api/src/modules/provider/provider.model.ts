@@ -1,6 +1,6 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { DocumentType } from '../catalog/models/document-type.model.js';
-import { Company } from '../company/company.model.js';
+import { DocumentType } from '../catalog/models/document-type.model';
+import { Company } from '../company/company.model';
 
 /**
  * Provider model — contact persons from supplier companies.

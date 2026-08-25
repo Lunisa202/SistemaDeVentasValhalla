@@ -1,4 +1,4 @@
-import { AppError } from './app-error.js';
+import { AppError } from './app-error';
 
 /**
  * 404 Not Found error.

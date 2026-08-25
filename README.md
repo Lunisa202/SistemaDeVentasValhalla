@@ -686,18 +686,15 @@ export class Product extends Model {
 | Tipos nullable | `declare phone: string \| null` |
 | Columnas generadas (BD) | Se declaran como `readonly` sin setter |
 | `declare` vs `=` | Siempre `declare` (Sequelize maneja la inicialización internamente) |
+| Imports | Sin extensión: `from './user.service'` (bundler mode resuelve `.ts` automáticamente) |
+| Barrel exports | `index.ts` por módulo, importar con la carpeta: `from './modules/user'` |
 
 ### Registro de modelos
 
 Todos los modelos se registran en `src/config/database.ts` dentro del array `models`:
 
 ```typescript
-export const sequelize = new Sequelize({
-  // ...config
-  models: [Role, DocumentType, PaymentMethod, ProductCategory, Company,
-           User, Provider, Client, Product, Purchase, PurchaseDetail,
-           Sale, SaleDetail, RefreshToken],
-});
+import { userRoutes } from './modules/user';  // Resuelve ./modules/user/index.ts
 ```
 
 Esto activa las relaciones declaradas con decoradores y permite que Sequelize resuelva includes/joins automáticamente.

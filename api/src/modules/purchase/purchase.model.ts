@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
-import { User } from '../user/user.model.js';
-import { Provider } from '../provider/provider.model.js';
-import { PurchaseDetail } from './purchase-detail.model.js';
+import { User } from '../user/user.model';
+import { Provider } from '../provider/provider.model';
+import { PurchaseDetail } from './purchase-detail.model';
 
 /**
  * Purchase model — stock acquisition from providers.

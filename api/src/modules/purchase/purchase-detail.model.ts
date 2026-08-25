@@ -1,6 +1,6 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Purchase } from './purchase.model.js';
-import { Product } from '../product/product.model.js';
+import { Purchase } from './purchase.model';
+import { Product } from '../product/product.model';
 
 /**
  * PurchaseDetail model — line items of a purchase.

@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
-import { User } from '../../user/user.model.js';
+import { User } from '../../user/user.model';
 
 /**
  * Role model — defines system roles (admin, seller).

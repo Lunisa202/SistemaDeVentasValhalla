@@ -1,2 +1,3 @@
-export { Purchase } from './purchase.model.js';
-export { PurchaseDetail } from './purchase-detail.model.js';
+export { Purchase } from './purchase.model';
+export { PurchaseDetail } from './purchase-detail.model';
+export { purchaseRoutes} from './purchase.routes';
