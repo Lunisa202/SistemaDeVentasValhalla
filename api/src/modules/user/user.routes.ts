@@ -1,8 +1,8 @@
 import { Router, type Router as RouterType } from 'express';
-import { UserController } from './user.controller.js';
-import { asyncHandler } from '../../common/middlewares/async-handler.js';
-import { validateSchema } from '../../common/middlewares/validate-schema.js';
-import { createUserSchema, updateUserSchema } from './user.schema.js';
+import { UserController } from './user.controller';
+import { asyncHandler } from '../../common/middlewares/async-handler';
+import { validateSchema } from '../../common/middlewares/validate-schema';
+import { createUserSchema, updateUserSchema } from './user.schema';
 
 export const userRoutes: RouterType = Router();
 

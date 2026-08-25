@@ -1,7 +1,8 @@
-import { Product } from './product.model.js';
-import { ProductCategory } from '../catalog/models/product-category.model.js';
-import { getOffset, type PaginationParams } from '../../common/helpers/pagination.js';
+import { Product } from './product.model';
+import { ProductCategory } from '../catalog/models/product-category.model';
+import { getOffset, type PaginationParams } from '../../common/helpers/pagination';
 import { Op } from 'sequelize';
+import type { CreateProductDto, UpdateProductDto } from './product.dto';
 
 export class ProductRepository {
   private readonly defaultInclude = [
@@ -9,15 +10,20 @@ export class ProductRepository {
   ];
 
   async findAll(params: PaginationParams, filters?: { isActive?: boolean; categoryId?: number; search?: string }) {
-    const where: Record<string, unknown> = {};
-    if (filters?.isActive !== undefined) where.isActive = filters.isActive;
-    if (filters?.categoryId) where.categoryId = filters.categoryId;
+    const conditions: any[] = [];
+
+    if (filters?.isActive !== undefined) conditions.push({ isActive: filters.isActive });
+    if (filters?.categoryId) conditions.push({ categoryId: filters.categoryId });
     if (filters?.search) {
-      where[Op.or as any] = [
-        { name: { [Op.iLike]: `%${filters.search}%` } },
-        { code: { [Op.iLike]: `%${filters.search}%` } },
-      ];
+      conditions.push({
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${filters.search}%` } },
+          { code: { [Op.iLike]: `%${filters.search}%` } },
+        ],
+      });
     }
+
+    const where = conditions.length > 0 ? { [Op.and]: conditions } : {};
 
     return Product.findAndCountAll({
       where,
@@ -39,14 +45,14 @@ export class ProductRepository {
     });
   }
 
-  async create(data: Partial<Product>) {
+  async create(data: CreateProductDto) {
     return Product.create(data as any);
   }
 
-  async update(id: string, data: Partial<Product>) {
+  async update(id: string, data: UpdateProductDto) {
     const product = await Product.findByPk(id);
     if (!product) return null;
-    return product.update(data);
+    return product.update(data as any);
   }
 
   async softDelete(id: string) {

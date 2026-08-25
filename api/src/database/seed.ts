@@ -8,8 +8,8 @@
  * because seeders use findOrCreate.
  */
 import { Umzug, SequelizeStorage } from 'umzug';
-import { sequelize } from '../config/database.js';
-import { logger } from '../common/logger.js';
+import { sequelize } from '../config/database';
+import { logger } from '../common/logger';
 
 export const seeder = new Umzug({
   migrations: {
@@ -26,9 +26,9 @@ export const seeder = new Umzug({
 });
 
 async function run() {
-  logger.info('🌱 Running seeders...');
+  logger.info('Running seeders...');
   await seeder.up();
-  logger.info('✅ All seeders applied');
+  logger.info('All seeders applied');
   await sequelize.close();
 }
 

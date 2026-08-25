@@ -1,9 +1,9 @@
 import { Router, type Router as RouterType } from 'express';
-import { AuthController } from './auth.controller.js';
-import { asyncHandler } from '../../common/middlewares/async-handler.js';
-import { validateSchema } from '../../common/middlewares/validate-schema.js';
-import { authRateLimiter } from '../../common/middlewares/rate-limiter.js';
-import { loginSchema } from './auth.schema.js';
+import { AuthController } from './auth.controller';
+import { asyncHandler } from '../../common/middlewares/async-handler';
+import { validateSchema } from '../../common/middlewares/validate-schema';
+import { authRateLimiter } from '../../common/middlewares/rate-limiter';
+import { loginSchema } from './auth.schema';
 
 /**
  * Auth routes — authentication endpoints.

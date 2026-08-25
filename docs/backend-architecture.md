@@ -118,6 +118,23 @@ api/src/
 
 ---
 
+## Convenciones de imports
+
+| Convención | Ejemplo |
+|-----------|---------|
+| Sin extensión de archivo | `from './user.service'` (no `.js` ni `.ts`) |
+| Barrels por módulo | `from './modules/user'` resuelve `./modules/user/index.ts` |
+| `moduleResolution: "bundler"` | TypeScript resuelve archivos `.ts` automáticamente |
+| DTOs tipados | `type CreateUserDto = z.infer<typeof createUserSchema>` |
+| No barrel global | Cada módulo tiene su `index.ts`, pero no hay uno en `modules/` |
+
+Esto funciona porque:
+- **Dev** (`tsx`): resuelve imports como un bundler
+- **Build** (`tsup`): bundlea todo, resuelve igual
+- **Typecheck** (`tsc --noEmit`): `moduleResolution: "bundler"` acepta imports sin extensión
+
+---
+
 ## Capas de la arquitectura
 
 ### 1. Controller (Transporte HTTP)

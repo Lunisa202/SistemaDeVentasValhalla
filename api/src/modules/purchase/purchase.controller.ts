@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { PurchaseService } from './purchase.service.js';
-import { sendSuccess, sendCreated } from '../../common/helpers/response.js';
-import { parsePaginationParams } from '../../common/helpers/pagination.js';
+import { PurchaseService } from './purchase.service';
+import { sendSuccess, sendCreated } from '../../common/helpers/response';
+import { parsePaginationParams } from '../../common/helpers/pagination';
 
 const service = new PurchaseService();
 

@@ -1,6 +1,6 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Sale } from './sale.model.js';
-import { Product } from '../product/product.model.js';
+import { Sale } from './sale.model';
+import { Product } from '../product/product.model';
 
 /**
  * SaleDetail model — line items of a sale.
@@ -51,10 +51,18 @@ export class SaleDetail extends Model {
   declare unitPrice: number;
 
   @Column({
+    type: DataType.DECIMAL(5, 2),
+    allowNull: false,
+    defaultValue: 0,
+    field: 'discount_percent',
+  })
+  declare discountPercent: number;
+
+  @Column({
     type: DataType.DECIMAL(10, 2),
     allowNull: true,
   })
-  declare subtotal: number; // GENERATED column — read only
+  declare subtotal: number; // GENERATED: quantity * unit_price * (1 - discount_percent/100)
 
   // Relationships
   @BelongsTo(() => Sale)

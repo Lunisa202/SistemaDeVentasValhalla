@@ -1,4 +1,4 @@
-import type { PaginationMeta } from './response.js';
+import type { PaginationMeta } from './response';
 
 /**
  * Pagination parameter interface.

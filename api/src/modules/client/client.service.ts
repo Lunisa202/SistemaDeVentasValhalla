@@ -1,6 +1,7 @@
-import { ClientRepository } from './client.repository.js';
-import { NotFoundError } from '../../common/errors/not-found.error.js';
-import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination.js';
+import { ClientRepository } from './client.repository';
+import { NotFoundError } from '../../common/errors/not-found.error';
+import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination';
+import type { CreateClientDto, UpdateClientDto } from './client.dto';
 
 export class ClientService {
   constructor(private readonly repository = new ClientRepository()) {}
@@ -16,12 +17,12 @@ export class ClientService {
     return client;
   }
 
-  async create(data: Record<string, unknown>) {
-    return this.repository.create(data as any);
+  async create(data: CreateClientDto) {
+    return this.repository.create(data);
   }
 
-  async update(id: string, data: Record<string, unknown>) {
-    const client = await this.repository.update(id, data as any);
+  async update(id: string, data: UpdateClientDto) {
+    const client = await this.repository.update(id, data);
     if (!client) throw new NotFoundError('Cliente');
     return this.repository.findById(id);
   }

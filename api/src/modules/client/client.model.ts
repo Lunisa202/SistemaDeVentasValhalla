@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { DocumentType } from '../catalog/models/document-type.model.js';
+import { DocumentType } from '../catalog/models/document-type.model';
 
 /**
  * Client model — customers who buy products.

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/app-error.js';
-import { logger } from '../logger.js';
+import { AppError } from '../errors/app-error';
+import { logger } from '../logger';
 
 /**
  * Global error handler middleware.

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { UserService } from './user.service.js';
-import { sendSuccess, sendCreated, sendNoContent } from '../../common/helpers/response.js';
-import { parsePaginationParams } from '../../common/helpers/pagination.js';
+import { UserService } from './user.service';
+import { sendSuccess, sendCreated, sendNoContent } from '../../common/helpers/response';
+import { parsePaginationParams } from '../../common/helpers/pagination';
 
 const service = new UserService();
 

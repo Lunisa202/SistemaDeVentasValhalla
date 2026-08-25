@@ -1,13 +1,14 @@
-import { CompanyRepository } from './company.repository.js';
-import { NotFoundError } from '../../common/errors/not-found.error.js';
-import { ConflictError } from '../../common/errors/conflict.error.js';
-import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination.js';
+import { CompanyRepository } from './company.repository';
+import { NotFoundError } from '../../common/errors/not-found.error';
+import { ConflictError } from '../../common/errors/conflict.error';
+import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination';
+import type { CreateCompanyDto, UpdateCompanyDto } from './company.dto';
 
 export class CompanyService {
   constructor(private readonly repository = new CompanyRepository()) {}
 
-  async getAll(params: PaginationParams) {
-    const { rows, count } = await this.repository.findAll(params, { isActive: true });
+  async getAll(params: PaginationParams, search?: string) {
+    const { rows, count } = await this.repository.findAll(params, { isActive: true, search });
     return { data: rows, meta: buildPaginationMeta(count, params) };
   }
 
@@ -17,18 +18,18 @@ export class CompanyService {
     return company;
   }
 
-  async create(data: { name: string; taxId: string }) {
+  async create(data: CreateCompanyDto) {
     const existing = await this.repository.findByTaxId(data.taxId);
     if (existing) throw new ConflictError('El RUC ya está registrado');
-    return this.repository.create(data as any);
+    return this.repository.create(data);
   }
 
-  async update(id: string, data: Record<string, unknown>) {
-    if (data.taxId && typeof data.taxId === 'string') {
+  async update(id: string, data: UpdateCompanyDto) {
+    if (data.taxId) {
       const existing = await this.repository.findByTaxId(data.taxId);
       if (existing && existing.id !== id) throw new ConflictError('El RUC ya está registrado');
     }
-    const company = await this.repository.update(id, data as any);
+    const company = await this.repository.update(id, data);
     if (!company) throw new NotFoundError('Empresa');
     return company;
   }

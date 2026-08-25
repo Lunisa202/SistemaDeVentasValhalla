@@ -1,5 +1,5 @@
 import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
-import { Provider } from '../provider/provider.model.js';
+import { Provider } from '../provider/provider.model';
 
 /**
  * Company model — supplier businesses.

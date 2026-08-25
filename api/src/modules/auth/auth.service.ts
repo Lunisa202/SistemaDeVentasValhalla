@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { User } from '../user/user.model.js';
-import { Role } from '../catalog/models/role.model.js';
-import { RefreshToken } from './refresh-token.model.js';
-import { environment } from '../../config/environment.js';
-import { UnauthorizedError } from '../../common/errors/unauthorized.error.js';
+import { User } from '../user/user.model';
+import { Role } from '../catalog/models/role.model';
+import { RefreshToken } from './refresh-token.model';
+import { environment } from '../../config/environment';
+import { UnauthorizedError } from '../../common/errors/unauthorized.error';
 import { Op } from 'sequelize';
 
 /**

@@ -13,8 +13,8 @@
  * 4. Each migration has an `up` (apply) and `down` (revert) function
  */
 import { Umzug, SequelizeStorage } from 'umzug';
-import { sequelize } from '../config/database.js';
-import { logger } from '../common/logger.js';
+import { sequelize } from '../config/database';
+import { logger } from '../common/logger';
 
 export const migrator = new Umzug({
   migrations: {
@@ -36,18 +36,18 @@ async function run() {
 
   switch (command) {
     case 'up':
-      logger.info('⬆️  Running pending migrations...');
+      logger.info('Running pending migrations...');
       await migrator.up();
-      logger.info('✅ All migrations applied');
+      logger.info('All migrations applied');
       break;
     case 'down':
-      logger.info('⬇️  Reverting last migration...');
+      logger.info('Reverting last migration...');
       await migrator.down();
-      logger.info('✅ Last migration reverted');
+      logger.info('Last migration reverted');
       break;
     case 'pending':
       const pending = await migrator.pending();
-      logger.info(`📋 Pending migrations: ${pending.length}`);
+      logger.info(`Pending migrations: ${pending.length}`);
       pending.forEach((m) => logger.info(`  - ${m.name}`));
       break;
     default:

@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
-import { UserRepository } from './user.repository.js';
-import { NotFoundError } from '../../common/errors/not-found.error.js';
-import { ConflictError } from '../../common/errors/conflict.error.js';
-import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination.js';
+import { UserRepository } from './user.repository';
+import { NotFoundError } from '../../common/errors/not-found.error';
+import { ConflictError } from '../../common/errors/conflict.error';
+import { buildPaginationMeta, type PaginationParams } from '../../common/helpers/pagination';
+import type { CreateUserDto, UpdateUserDto } from './user.dto';
 
 /**
  * UserService — business logic for user management.
@@ -24,7 +25,7 @@ export class UserService {
     return user;
   }
 
-  async create(data: { email: string; password: string; [key: string]: unknown }) {
+  async create(data: CreateUserDto) {
     // Check for duplicate email
     const existing = await this.repository.findByEmail(data.email);
     if (existing) throw new ConflictError('El email ya está registrado');
@@ -32,24 +33,28 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12);
 
-    return this.repository.create({ ...data, password: hashedPassword } as any);
+    const user = await this.repository.create({ ...data, password: hashedPassword });
+    // Return without password — fetch with includes
+    return this.repository.findById(user.id);
   }
 
-  async update(id: string, data: Record<string, unknown>) {
+  async update(id: string, data: UpdateUserDto) {
+    const updateData = { ...data };
+
     // If updating password, hash it
-    if (data.password && typeof data.password === 'string') {
-      data.password = await bcrypt.hash(data.password, 12);
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 12);
     }
 
     // If updating email, check for conflicts
-    if (data.email && typeof data.email === 'string') {
-      const existing = await this.repository.findByEmail(data.email);
+    if (updateData.email) {
+      const existing = await this.repository.findByEmail(updateData.email);
       if (existing && existing.id !== id) {
         throw new ConflictError('El email ya está registrado');
       }
     }
 
-    const user = await this.repository.update(id, data as any);
+    const user = await this.repository.update(id, updateData);
     if (!user) throw new NotFoundError('Usuario');
     return this.repository.findById(id); // Return with includes, without password
   }

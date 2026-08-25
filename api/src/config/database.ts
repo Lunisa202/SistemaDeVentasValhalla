@@ -1,22 +1,22 @@
 import { Sequelize } from 'sequelize-typescript';
-import { environment } from './environment.js';
-import { logger } from '../common/logger.js';
+import { environment } from './environment';
+import { logger } from '../common/logger';
 
 // Model imports
-import { Role } from '../modules/catalog/models/role.model.js';
-import { DocumentType } from '../modules/catalog/models/document-type.model.js';
-import { PaymentMethod } from '../modules/catalog/models/payment-method.model.js';
-import { ProductCategory } from '../modules/catalog/models/product-category.model.js';
-import { Company } from '../modules/company/company.model.js';
-import { User } from '../modules/user/user.model.js';
-import { Provider } from '../modules/provider/provider.model.js';
-import { Client } from '../modules/client/client.model.js';
-import { Product } from '../modules/product/product.model.js';
-import { Purchase } from '../modules/purchase/purchase.model.js';
-import { PurchaseDetail } from '../modules/purchase/purchase-detail.model.js';
-import { Sale } from '../modules/sale/sale.model.js';
-import { SaleDetail } from '../modules/sale/sale-detail.model.js';
-import { RefreshToken } from '../modules/auth/refresh-token.model.js';
+import { Role } from '../modules/catalog/models/role.model';
+import { DocumentType } from '../modules/catalog/models/document-type.model';
+import { PaymentMethod } from '../modules/catalog/models/payment-method.model';
+import { ProductCategory } from '../modules/catalog/models/product-category.model';
+import { Company } from '../modules/company/company.model';
+import { User } from '../modules/user/user.model';
+import { Provider } from '../modules/provider/provider.model';
+import { Client } from '../modules/client/client.model';
+import { Product } from '../modules/product/product.model';
+import { Purchase } from '../modules/purchase/purchase.model';
+import { PurchaseDetail } from '../modules/purchase/purchase-detail.model';
+import { Sale } from '../modules/sale/sale.model';
+import { SaleDetail } from '../modules/sale/sale-detail.model';
+import { RefreshToken } from '../modules/auth/refresh-token.model';
 
 /**
  * Sequelize instance configured for PostgreSQL.
@@ -75,9 +75,9 @@ export const sequelize = new Sequelize({
 export async function initializeDatabase(): Promise<void> {
   try {
     await sequelize.authenticate();
-    logger.info('✅ Database connection established successfully');
+    logger.info('Database connection established successfully');
   } catch (error) {
-    logger.fatal({ err: error }, '❌ Unable to connect to database');
+    logger.fatal({ err: error }, 'Unable to connect to database');
     throw error;
   }
 }
