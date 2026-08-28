@@ -243,6 +243,7 @@ Ir a **Project Settings → Database → Connection parameters**:
 | `DB_NAME` | `postgres` (siempre es este) |
 | `DB_USER` | `postgres` (directa) o `postgres.tu-ref` (pooler) |
 | `DB_PASS` | La contraseña que definiste al crear el proyecto |
+| `DB_SSL` | `true` para Supabase (requiere SSL), `false` para PostgreSQL local |
 
 **¿Cuál puerto usar?**
 - `5432` (directa): Para desarrollo, migraciones y scripts. Máx ~15 conexiones en free tier.
@@ -256,7 +257,10 @@ DB_PORT=5432
 DB_NAME=postgres
 DB_USER=postgres
 DB_PASS=tu-contraseña-segura
+DB_SSL=true
 ```
+
+> `DB_SSL=true` es obligatorio para Supabase (requiere conexiones SSL).
 
 ---
 
@@ -282,7 +286,10 @@ DB_PORT=5432
 DB_NAME=valhalla_sales
 DB_USER=postgres
 DB_PASS=localdev123
+DB_SSL=false
 ```
+
+> `DB_SSL=false` para PostgreSQL local (no tiene SSL configurado).
 
 ---
 
