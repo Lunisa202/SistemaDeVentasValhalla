@@ -4,8 +4,11 @@
  * Inserts initial reference data (roles, document types, payment methods, categories).
  * Run with: pnpm run seed
  *
- * This is idempotent — running it twice won't create duplicates
- * because seeders use findOrCreate.
+ * Idempotent by two layers:
+ * 1. SequelizeSeederMeta tracking skips already-run seeders on restarts.
+ * 2. Each seeder checks existence before inserting (SELECT ... WHERE before
+ *    bulkInsert), so re-running after a tracking reset won't duplicate data
+ *    nor violate UNIQUE constraints.
  */
 import { Umzug, SequelizeStorage } from 'umzug';
 import { sequelize } from '../config/database';

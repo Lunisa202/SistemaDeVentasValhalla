@@ -17,6 +17,9 @@ const environmentSchema = z.object({
   DB_NAME: z.string().min(1),
   DB_USER: z.string().min(1),
   DB_PASS: z.string().min(1),
+  // SSL: enable for managed DBs like Supabase. Disable for local/self-hosted
+  // PostgreSQL that has no SSL. Accepts 'true'/'false' (string from env).
+  DB_SSL: z.enum(['true', 'false']).default('false').transform((val) => val === 'true'),
 
   // JWT
   JWT_ACCESS_SECRET: z.string().min(10),

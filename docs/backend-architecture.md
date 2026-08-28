@@ -310,3 +310,36 @@ Respuesta incluye metadata:
   }
 }
 ```
+
+---
+
+## Migraciones y Seeders
+
+El versionado del esquema se maneja con **umzug**. Existen dos flujos independientes, cada uno con su propia tabla de tracking:
+
+| Flujo | Comando | Tabla de tracking | Contenido |
+|-------|---------|-------------------|-----------|
+| Migraciones | `pnpm run migrate` | `SequelizeMeta` | Estructura (CREATE, ALTER, índices, triggers) |
+| Seeders | `pnpm run seed` | `SequelizeSeederMeta` | Datos iniciales (roles, tipos de documento, métodos de pago, categorías, admin) |
+
+### Idempotencia
+
+Ambos flujos son **idempotentes**: ejecutarlos múltiples veces no duplica datos ni rompe constraints.
+
+- **Migraciones:** umzug solo aplica las migraciones que no están registradas en `SequelizeMeta`. En reinicios, no hay pendientes → no hace nada. Las migraciones nunca contienen `DROP` en su `up()`, por lo que **los datos no se pierden en reinicios**.
+- **Seeders (doble capa de protección):**
+  1. `SequelizeSeederMeta` evita re-ejecución en reinicios normales.
+  2. Cada seeder verifica existencia antes de insertar (`SELECT ... WHERE` previo al `bulkInsert`). Si la tabla de tracking se perdiera o reseteara, re-ejecutar el seeder **no crea duplicados ni falla** en columnas `UNIQUE` (`role.name`, `document_type.name`, `payment_method.name`, `user.email`).
+
+Esto es especialmente importante en despliegues donde el contenedor reinicia y ejecuta migraciones + seeders en cada arranque (ver sección de Despliegue). Los datos de negocio (ventas, productos, clientes) siempre persisten en la base de datos externa.
+
+### Arranque automatizado en producción
+
+El script `scripts/bootstrap.mjs` ejecuta al arrancar el contenedor, en orden:
+
+1. Espera a que la base de datos acepte conexiones (retry con backoff).
+2. Aplica migraciones pendientes.
+3. Aplica seeders pendientes.
+4. Inicia el servidor HTTP.
+
+Como migraciones y seeders son idempotentes, este arranque es seguro de repetir en cada reinicio del servicio.

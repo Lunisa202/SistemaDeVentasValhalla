@@ -1,0 +1,51 @@
+services:
+  # ─── PostgreSQL (local development) ──────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: valhalla-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: valhalla_sales
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── API (Express + TypeScript) ──────────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: valhalla-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: valhalla_sales
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_SSL: 'false'
+      JWT_ACCESS_SECRET: docker-dev-access-secret-change-in-production
+      JWT_REFRESH_SECRET: docker-dev-refresh-secret-change-in-production
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      ALLOWED_ORIGINS: http://localhost:4000,http://localhost:3001
+      LOG_LEVEL: info
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    driver: local

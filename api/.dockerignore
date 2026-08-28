@@ -1,0 +1,30 @@
+# Dependencies (reinstalled in Docker)
+node_modules/
+
+# Build output (rebuilt in Docker)
+dist/
+
+# Environment files (injected via docker-compose or secrets)
+.env
+.env.local
+.env.production
+
+# Development files
+.vscode/
+*.md
+LICENSE
+
+# Git
+.git/
+.gitignore
+
+# Testing
+coverage/
+__tests__/
+
+# Postman collection (not needed in container)
+postman/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -63,7 +63,7 @@ export const sequelize = new Sequelize({
     acquire: 30000,
     idle: 10000,
   },
-  dialectOptions: environment.NODE_ENV === 'production'
+  dialectOptions: environment.DB_SSL
     ? { ssl: { require: true, rejectUnauthorized: false } }
     : {},
 });
