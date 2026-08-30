@@ -343,6 +343,51 @@ const options: swaggerJsdoc.Options = {
             },
           },
         },
+        // ─── Cash Register Schemas ──────────────────────────────────
+        CashRegister: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', example: 3 },
+            openedBy: { type: 'string', format: 'uuid' },
+            closedBy: { type: 'string', format: 'uuid', nullable: true },
+            openingAmount: { type: 'number', example: 100.00 },
+            expectedAmount: { type: 'number', nullable: true, example: 440.00 },
+            actualAmount: { type: 'number', nullable: true, example: 438.00 },
+            difference: { type: 'number', nullable: true, example: -2.00 },
+            status: { type: 'string', enum: ['OPEN', 'CLOSED'], example: 'CLOSED' },
+            notes: { type: 'string', nullable: true },
+            openedAt: { type: 'string', format: 'date-time' },
+            closedAt: { type: 'string', format: 'date-time', nullable: true },
+            summaries: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer' },
+                  paymentMethodId: { type: 'integer', example: 1 },
+                  totalSales: { type: 'number', example: 340.00 },
+                  transactionCount: { type: 'integer', example: 12 },
+                  paymentMethod: { $ref: '#/components/schemas/PaymentMethod' },
+                },
+              },
+            },
+          },
+        },
+        OpenCashRegister: {
+          type: 'object',
+          properties: {
+            openingAmount: { type: 'number', minimum: 0, default: 0, example: 100.00 },
+            notes: { type: 'string', maxLength: 500, example: 'Turno mañana' },
+          },
+        },
+        CloseCashRegister: {
+          type: 'object',
+          required: ['actualAmount'],
+          properties: {
+            actualAmount: { type: 'number', minimum: 0, example: 438.00 },
+            notes: { type: 'string', maxLength: 500, example: 'Faltante de S/. 2' },
+          },
+        },
         // ─── Sale Schemas ───────────────────────────────────────────
         CreateSale: {
           type: 'object',

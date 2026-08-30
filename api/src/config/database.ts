@@ -17,6 +17,8 @@ import { PurchaseDetail } from '../modules/purchase/purchase-detail.model';
 import { Sale } from '../modules/sale/sale.model';
 import { SaleDetail } from '../modules/sale/sale-detail.model';
 import { RefreshToken } from '../modules/auth/refresh-token.model';
+import { CashRegister } from '../modules/cash-register/cash-register.model';
+import { CashRegisterSummary } from '../modules/cash-register/cash-register-summary.model';
 
 /**
  * Sequelize instance configured for PostgreSQL.
@@ -50,6 +52,8 @@ export const sequelize = new Sequelize({
     Sale,
     SaleDetail,
     RefreshToken,
+    CashRegister,
+    CashRegisterSummary,
   ],
   define: {
     timestamps: true,
