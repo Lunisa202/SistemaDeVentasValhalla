@@ -14,7 +14,8 @@
     { "key": "productId", "value": "" },
     { "key": "productId2", "value": "" },
     { "key": "purchaseId", "value": "" },
-    { "key": "saleId", "value": "" }
+    { "key": "saleId", "value": "" },
+    { "key": "cashRegisterId", "value": "" }
   ],
   "item": [
     {
@@ -511,7 +512,79 @@
       ]
     },
     {
-      "name": "9. Sales (con IGV y descuentos)",
+      "name": "9. Cash Register (Caja)",
+      "item": [
+        {
+          "name": "GET /cash-register/status (antes de abrir)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/cash-register/status",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "POST /cash-register/open (abrir caja)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('cashRegisterId', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/cash-register/open",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"openingAmount\": 100.00,\n  \"notes\": \"Turno mañana\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /cash-register/open (ya hay una abierta) → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/cash-register/open",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"openingAmount\": 50.00\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /cash-register/status (después de abrir)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/cash-register/status",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /cash-register/current (caja abierta)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/cash-register/current",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Sales (con IGV y descuentos)",
       "item": [
         {
           "name": "POST /sales (venta simple sin descuento)",
@@ -628,7 +701,73 @@
       ]
     },
     {
-      "name": "10. Error Cases",
+      "name": "11. Cash Register - Cierre",
+      "item": [
+        {
+          "name": "POST /cash-register/close (cerrar con resumen)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/cash-register/close",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actualAmount\": 438.00,\n  \"notes\": \"Cierre turno mañana\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /cash-register/close (sin caja abierta) → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/cash-register/close",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actualAmount\": 100.00\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /sales (sin caja abierta) → 409",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sales",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voucherType\": \"TICKET\",\n  \"voucherCode\": \"T001-999999\",\n  \"saleChannel\": \"IN_STORE\",\n  \"paymentMethodId\": 1,\n  \"discountAmount\": 0,\n  \"products\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 1, \"discountPercent\": 0 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /cash-register (historial)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/cash-register?page=1&limit=10",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /cash-register/:id (reporte con resumen)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/cash-register/{{cashRegisterId}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Error Cases",
       "item": [
         {
           "name": "GET /users sin token → 401",

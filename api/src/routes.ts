@@ -8,6 +8,7 @@ import { clientRoutes } from './modules/client';
 import { productRoutes } from './modules/product';
 import { purchaseRoutes } from './modules/purchase';
 import { saleRoutes } from './modules/sale';
+import { cashRegisterRoutes } from './modules/cash-register';
 import { authGuard } from './common/middlewares/auth-guard';
 
 export const routes: RouterType = Router();
@@ -29,7 +30,7 @@ routes.use('/clients', authGuard(['admin', 'seller']), clientRoutes);
 routes.use('/products', authGuard(['admin']), productRoutes);
 routes.use('/purchases', authGuard(['admin']), purchaseRoutes);
 routes.use('/sales', authGuard(['admin', 'seller']), saleRoutes);
+routes.use('/cash-register', authGuard(['admin', 'seller']), cashRegisterRoutes);
 
-// TODO: cash-register and analytics modules
-// routes.use('/cash-register', authGuard(['admin', 'seller']), cashRegisterRoutes);
+// TODO: analytics module
 // routes.use('/analytics', authGuard(['admin']), analyticsRoutes);
