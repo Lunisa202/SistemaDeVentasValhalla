@@ -423,4 +423,41 @@ pnpm run test           # Unit tests
 pnpm run test:e2e       # E2E con Playwright
 ```
 
-> Nota: Los scripts de test serán agregados al `package.json` cuando se configure Vitest en la Fase 10.
+### Scripts disponibles (Fase 10)
+
+```bash
+pnpm run test            # Todos los tests
+pnpm run test:watch      # Modo watch
+pnpm run test:coverage   # Con reporte de cobertura (v8)
+pnpm run test:unit       # Solo unit tests (sin BD) — corren en cualquier entorno
+pnpm run test:integration # Solo integration tests (*.routes.test.ts) — requieren BD
+```
+
+---
+
+## Notas de implementación (Fase 10)
+
+Decisiones tomadas durante la implementación que difieren o precisan lo planeado arriba:
+
+### Unit tests (sin BD) vs Integration tests (con BD)
+
+- **Unit tests** (`pnpm run test:unit`): no tocan base de datos. Mockean el repository (services) o dependencias (jwt en authGuard). Corren en cualquier entorno, incluido CI sin infraestructura. Son la suite principal.
+- **Integration tests** (`pnpm run test:integration`): hacen requests HTTP reales (Supertest) contra una BD PostgreSQL real. **Requieren la BD levantada y migrada/seedeada.**
+
+### La BD de integration: usar la real (migrada), NO `sync({ force: true })`
+
+El ejemplo inicial sugería `sequelize.sync({ force: true })`, pero **no funciona con este proyecto**. `sync()` crea tablas desde los modelos, pero NO recrea los ENUMs (`voucher_type`, `sale_channel`), las columnas GENERATED (`subtotal`), ni los triggers de `updated_at` — todo eso se define con SQL crudo en las migraciones. Usar `sync()` produciría un schema incompleto y los tests fallarían.
+
+**Solución:** los integration tests corren contra una BD que ya pasó por las migraciones + seeders (vía `docker compose up` o `pnpm run migrate && pnpm run seed`). Se puede usar el PostgreSQL local de Docker (BD desechable) o un proyecto Supabase de test.
+
+### El flujo de venta (sale-flow) requiere BD desechable
+
+El test `sale-flow.routes.test.ts` (abrir caja → vender → cerrar) abre y cierra sesiones de caja y modifica stock. **No debe correrse contra una BD con datos reales** (cerraría cajas abiertas reales). Correrlo solo contra la BD local de Docker.
+
+### Rate limiter desactivado en test
+
+Los integration tests hacen muchos logins seguidos, lo que agotaba el `authRateLimiter` (5/15min) y devolvía 429. Se agregó `skip: () => process.env.NODE_ENV === 'test'` a ambos rate limiters. Vitest setea `NODE_ENV=test` (reforzado en `vitest.config.ts`), así que en test los límites se saltan; en dev/prod siguen activos.
+
+### Ejecución de integration tests en serie
+
+Cada archivo de integración cierra la conexión Sequelize en `afterAll`. Para evitar que un archivo cierre la conexión que otro está usando, `test:integration` usa `--no-file-parallelism` (ejecución en serie).

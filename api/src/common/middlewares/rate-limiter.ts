@@ -1,6 +1,13 @@
 import rateLimit from 'express-rate-limit';
 
 /**
+ * Disable rate limiting in the test environment. Integration tests fire many
+ * requests quickly (multiple logins, etc.) and would otherwise hit the limit.
+ * In dev/prod the limiter is fully active.
+ */
+const skipInTest = () => process.env.NODE_ENV === 'test';
+
+/**
  * Rate limiter middleware.
  * Protects against brute-force attacks and abuse.
  *
@@ -12,6 +19,7 @@ export const rateLimiter = rateLimit({
   max: 100, // max requests per window per IP
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
+  skip: skipInTest,
   message: {
     success: false,
     error: {
@@ -30,6 +38,7 @@ export const authRateLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   message: {
     success: false,
     error: {
