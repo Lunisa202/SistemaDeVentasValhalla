@@ -124,7 +124,11 @@ providerRoutes.get('/:id', asyncHandler(ProviderController.getById));
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-providerRoutes.post('/', validateSchema(createProviderSchema), asyncHandler(ProviderController.create));
+providerRoutes.post(
+  '/',
+  validateSchema(createProviderSchema),
+  asyncHandler(ProviderController.create),
+);
 
 /**
  * @swagger
@@ -168,7 +172,11 @@ providerRoutes.post('/', validateSchema(createProviderSchema), asyncHandler(Prov
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-providerRoutes.patch('/:id', validateSchema(updateProviderSchema), asyncHandler(ProviderController.update));
+providerRoutes.patch(
+  '/:id',
+  validateSchema(updateProviderSchema),
+  asyncHandler(ProviderController.update),
+);
 
 /**
  * @swagger

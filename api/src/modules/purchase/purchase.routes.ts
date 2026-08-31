@@ -235,4 +235,8 @@ purchaseRoutes.get('/:id', asyncHandler(PurchaseController.getById));
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-purchaseRoutes.post('/', validateSchema(createPurchaseSchema), asyncHandler(PurchaseController.create));
+purchaseRoutes.post(
+  '/',
+  validateSchema(createPurchaseSchema),
+  asyncHandler(PurchaseController.create),
+);

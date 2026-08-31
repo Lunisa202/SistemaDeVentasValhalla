@@ -26,26 +26,34 @@ export class PurchaseService {
   async create(userId: string, data: CreatePurchaseInput) {
     const result = await sequelize.transaction(async (t) => {
       // Calculate total
-      const total = roundTo2(data.products.reduce((acc, p) => acc + roundTo2(p.quantity * p.unitPrice), 0));
+      const total = roundTo2(
+        data.products.reduce((acc, p) => acc + roundTo2(p.quantity * p.unitPrice), 0),
+      );
 
       // Create purchase header
-      const purchase = await Purchase.create({
-        userId,
-        providerId: data.providerId,
-        voucherType: data.voucherType,
-        total,
-      } as any, { transaction: t });
+      const purchase = await Purchase.create(
+        {
+          userId,
+          providerId: data.providerId,
+          voucherType: data.voucherType,
+          total,
+        } as any,
+        { transaction: t },
+      );
 
       // Create details and update stock
       const details = await Promise.all(
         data.products.map(async (item) => {
           // Create detail line
-          const detail = await PurchaseDetail.create({
-            purchaseId: purchase.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-          } as any, { transaction: t });
+          const detail = await PurchaseDetail.create(
+            {
+              purchaseId: purchase.id,
+              productId: item.productId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+            } as any,
+            { transaction: t },
+          );
 
           // Increase product stock
           const product = await Product.findByPk(item.productId, { transaction: t });
@@ -81,7 +89,11 @@ export class PurchaseService {
       include: [
         { model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'email'] },
         { model: Provider, as: 'provider', attributes: ['id', 'firstName', 'lastName', 'email'] },
-        { model: PurchaseDetail, as: 'details', include: [{ model: Product, as: 'product', attributes: ['id', 'name', 'code'] }] },
+        {
+          model: PurchaseDetail,
+          as: 'details',
+          include: [{ model: Product, as: 'product', attributes: ['id', 'name', 'code'] }],
+        },
       ],
     });
     if (!purchase) throw new NotFoundError('Compra');

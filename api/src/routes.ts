@@ -9,6 +9,7 @@ import { productRoutes } from './modules/product';
 import { purchaseRoutes } from './modules/purchase';
 import { saleRoutes } from './modules/sale';
 import { cashRegisterRoutes } from './modules/cash-register';
+import { analyticsRoutes } from './modules/analytics';
 import { authGuard } from './common/middlewares/auth-guard';
 
 export const routes: RouterType = Router();
@@ -31,6 +32,4 @@ routes.use('/products', authGuard(['admin']), productRoutes);
 routes.use('/purchases', authGuard(['admin']), purchaseRoutes);
 routes.use('/sales', authGuard(['admin', 'seller']), saleRoutes);
 routes.use('/cash-register', authGuard(['admin', 'seller']), cashRegisterRoutes);
-
-// TODO: analytics module
-// routes.use('/analytics', authGuard(['admin']), analyticsRoutes);
+routes.use('/analytics', authGuard(['admin']), analyticsRoutes);

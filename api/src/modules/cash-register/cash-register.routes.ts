@@ -187,7 +187,11 @@ cashRegisterRoutes.get('/:id', asyncHandler(CashRegisterController.getById));
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-cashRegisterRoutes.post('/open', validateSchema(openCashRegisterSchema), asyncHandler(CashRegisterController.open));
+cashRegisterRoutes.post(
+  '/open',
+  validateSchema(openCashRegisterSchema),
+  asyncHandler(CashRegisterController.open),
+);
 
 /**
  * @swagger
@@ -235,4 +239,8 @@ cashRegisterRoutes.post('/open', validateSchema(openCashRegisterSchema), asyncHa
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-cashRegisterRoutes.post('/close', validateSchema(closeCashRegisterSchema), asyncHandler(CashRegisterController.close));
+cashRegisterRoutes.post(
+  '/close',
+  validateSchema(closeCashRegisterSchema),
+  asyncHandler(CashRegisterController.close),
+);

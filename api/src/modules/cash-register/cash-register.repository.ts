@@ -17,7 +17,9 @@ export class CashRegisterRepository {
   private readonly summaryInclude = {
     model: CashRegisterSummary,
     as: 'summaries',
-    include: [{ model: PaymentMethod, as: 'paymentMethod', attributes: ['id', 'name', 'displayName'] }],
+    include: [
+      { model: PaymentMethod, as: 'paymentMethod', attributes: ['id', 'name', 'displayName'] },
+    ],
   };
 
   /** Find the currently OPEN register (there should be at most one). */

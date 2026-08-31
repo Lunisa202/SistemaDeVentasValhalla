@@ -60,7 +60,9 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
 
   // CHECK constraints (PostgreSQL specific)
   const sequelize = queryInterface.sequelize;
-  await sequelize.query(`ALTER TABLE product ADD CONSTRAINT chk_product_price CHECK (sale_price > 0);`);
+  await sequelize.query(
+    `ALTER TABLE product ADD CONSTRAINT chk_product_price CHECK (sale_price > 0);`,
+  );
   await sequelize.query(`ALTER TABLE product ADD CONSTRAINT chk_product_stock CHECK (stock >= 0);`);
 
   // Indexes

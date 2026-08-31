@@ -39,8 +39,8 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
       phone: '999999999',
       email: 'admin@valhalla.com',
       password: hashedPassword,
-      role_id: 1,           // admin
-      document_type_id: 1,  // DNI
+      role_id: 1, // admin
+      document_type_id: 1, // DNI
       is_active: true,
       created_at: new Date(),
       updated_at: new Date(),

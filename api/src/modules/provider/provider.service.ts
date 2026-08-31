@@ -7,7 +7,11 @@ export class ProviderService {
   constructor(private readonly repository = new ProviderRepository()) {}
 
   async getAll(params: PaginationParams, companyId?: string, search?: string) {
-    const { rows, count } = await this.repository.findAll(params, { isActive: true, companyId, search });
+    const { rows, count } = await this.repository.findAll(params, {
+      isActive: true,
+      companyId,
+      search,
+    });
     return { data: rows, meta: buildPaginationMeta(count, params) };
   }
 

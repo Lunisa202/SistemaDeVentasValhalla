@@ -19,7 +19,10 @@ const environmentSchema = z.object({
   DB_PASS: z.string().min(1),
   // SSL: enable for managed DBs like Supabase. Disable for local/self-hosted
   // PostgreSQL that has no SSL. Accepts 'true'/'false' (string from env).
-  DB_SSL: z.enum(['true', 'false']).default('false').transform((val) => val === 'true'),
+  DB_SSL: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((val) => val === 'true'),
 
   // JWT
   JWT_ACCESS_SECRET: z.string().min(10),
@@ -28,7 +31,10 @@ const environmentSchema = z.object({
   JWT_REFRESH_EXPIRATION: z.string().default('7d'),
 
   // CORS
-  ALLOWED_ORIGINS: z.string().default('http://localhost:4000').transform((val) => val.split(',')),
+  ALLOWED_ORIGINS: z
+    .string()
+    .default('http://localhost:4000')
+    .transform((val) => val.split(',')),
 
   // Logging
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),

@@ -143,10 +143,17 @@ export class AuthService {
     const now = new Date();
 
     switch (unit) {
-      case 'd': now.setDate(now.getDate() + value); break;
-      case 'h': now.setHours(now.getHours() + value); break;
-      case 'm': now.setMinutes(now.getMinutes() + value); break;
-      default: now.setDate(now.getDate() + 7); // fallback 7 days
+      case 'd':
+        now.setDate(now.getDate() + value);
+        break;
+      case 'h':
+        now.setHours(now.getHours() + value);
+        break;
+      case 'm':
+        now.setMinutes(now.getMinutes() + value);
+        break;
+      default:
+        now.setDate(now.getDate() + 7); // fallback 7 days
     }
 
     return now;

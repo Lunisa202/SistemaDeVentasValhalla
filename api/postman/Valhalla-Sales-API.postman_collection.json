@@ -767,7 +767,84 @@
       ]
     },
     {
-      "name": "12. Error Cases",
+      "name": "12. Analytics (solo admin)",
+      "item": [
+        {
+          "name": "GET /analytics/overview",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/overview",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/sales-by-period (day)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/sales-by-period?groupBy=day",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/sales-by-period (month)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/sales-by-period?groupBy=month",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/top-products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/top-products?limit=5",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/sales-by-payment-method",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/sales-by-payment-method",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/sales-by-category",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/sales-by-category",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/profit-loss",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/profit-loss",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/low-stock",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/low-stock?threshold=10",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        },
+        {
+          "name": "GET /analytics/sales-by-seller",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/analytics/sales-by-seller",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. Error Cases",
       "item": [
         {
           "name": "GET /users sin token → 401",

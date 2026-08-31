@@ -14,12 +14,7 @@ import { logger } from '../logger';
  * 2. If it's an unexpected error (bug, DB crash), log it and return a generic message.
  *    Never expose internal error details in production.
  */
-export function errorHandler(
-  err: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   // Handle operational errors (expected)
   if (err instanceof AppError) {
     const response: Record<string, unknown> = {

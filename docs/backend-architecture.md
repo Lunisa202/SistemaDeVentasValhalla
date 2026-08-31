@@ -343,3 +343,20 @@ El script `scripts/bootstrap.mjs` ejecuta al arrancar el contenedor, en orden:
 4. Inicia el servidor HTTP.
 
 Como migraciones y seeders son idempotentes, este arranque es seguro de repetir en cada reinicio del servicio.
+
+---
+
+## Módulo de Caja (Cash Register)
+
+Gestiona sesiones de caja: abrir → registrar ventas → cerrar.
+
+- **Modelo de caja compartida:** solo UNA caja puede estar abierta a la vez. Todos los vendedores acumulan sus ventas en la caja abierta del turno. Refleja una tienda con una sola gaveta física.
+- **Validación de venta:** no se puede registrar una venta sin una caja abierta. El `SaleController` resuelve la caja activa; si no hay, responde `409 NO_OPEN_CASH_REGISTER`.
+- **Cierre:** agrupa las ventas de la sesión por método de pago (tabla `cash_register_summary`), calcula el monto esperado (`fondo inicial + ventas en efectivo`) y la diferencia (`contado - esperado` = sobrante/faltante).
+- **Rendimiento por vendedor:** NO se obtiene de la caja (que es compartida), sino de `sale.seller_id` vía el módulo Analytics (`/analytics/sales-by-seller`).
+
+Endpoints: `open`, `close`, `current`, `status`, `history` (`GET /`), `getById`. Ver detalle en el README.
+
+## Módulo de Analytics
+
+Reportes agregados de solo lectura para el dashboard (rol admin). Ver documento dedicado: [analytics.md](./analytics.md).

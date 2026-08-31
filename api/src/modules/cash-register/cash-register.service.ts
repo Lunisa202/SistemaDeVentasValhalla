@@ -131,12 +131,15 @@ export class CashRegisterService {
         const total = roundTo2(Number(row.total_sales));
         const count = Number(row.transaction_count);
 
-        await CashRegisterSummary.create({
-          cashRegisterId: register.id,
-          paymentMethodId: row.payment_method_id,
-          totalSales: total,
-          transactionCount: count,
-        } as any, { transaction: t });
+        await CashRegisterSummary.create(
+          {
+            cashRegisterId: register.id,
+            paymentMethodId: row.payment_method_id,
+            totalSales: total,
+            transactionCount: count,
+          } as any,
+          { transaction: t },
+        );
 
         if (cashMethodId !== null && row.payment_method_id === cashMethodId) {
           cashSales = total;
@@ -166,7 +169,13 @@ export class CashRegisterService {
           {
             model: CashRegisterSummary,
             as: 'summaries',
-            include: [{ model: PaymentMethod, as: 'paymentMethod', attributes: ['id', 'name', 'displayName'] }],
+            include: [
+              {
+                model: PaymentMethod,
+                as: 'paymentMethod',
+                attributes: ['id', 'name', 'displayName'],
+              },
+            ],
           },
         ],
         transaction: t,

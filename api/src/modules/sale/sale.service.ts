@@ -7,7 +7,11 @@ import { PaymentMethod } from '../catalog/models/payment-method.model';
 import { sequelize } from '../../config/database';
 import { NotFoundError } from '../../common/errors/not-found.error';
 import { AppError } from '../../common/errors/app-error';
-import { buildPaginationMeta, getOffset, type PaginationParams } from '../../common/helpers/pagination';
+import {
+  buildPaginationMeta,
+  getOffset,
+  type PaginationParams,
+} from '../../common/helpers/pagination';
 import { roundTo2 } from '../../common/helpers/math';
 
 /** IGV rate in Peru (18%) */
@@ -39,20 +43,23 @@ export class SaleService {
   async create(sellerId: string, cashRegisterId: number | null, data: CreateSaleInput) {
     const result = await sequelize.transaction(async (t) => {
       // Create sale header (totals calculated after details)
-      const sale = await Sale.create({
-        clientId: data.clientId || null,
-        sellerId,
-        cashRegisterId,
-        voucherType: data.voucherType,
-        voucherCode: data.voucherCode,
-        saleChannel: data.saleChannel,
-        paymentMethodId: data.paymentMethodId,
-        subtotal: 0,
-        discountAmount: data.discountAmount,
-        taxBase: 0,
-        taxAmount: 0,
-        total: 0,
-      } as any, { transaction: t });
+      const sale = await Sale.create(
+        {
+          clientId: data.clientId || null,
+          sellerId,
+          cashRegisterId,
+          voucherType: data.voucherType,
+          voucherCode: data.voucherCode,
+          saleChannel: data.saleChannel,
+          paymentMethodId: data.paymentMethodId,
+          subtotal: 0,
+          discountAmount: data.discountAmount,
+          taxBase: 0,
+          taxAmount: 0,
+          total: 0,
+        } as any,
+        { transaction: t },
+      );
 
       // Create details, validate stock, decrease it
       let itemsSubtotal = 0;
@@ -71,19 +78,24 @@ export class SaleService {
           }
 
           // Create detail with current sale price and discount
-          const detail = await SaleDetail.create({
-            saleId: sale.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            unitPrice: product.salePrice,
-            discountPercent: item.discountPercent,
-          } as any, { transaction: t });
+          const detail = await SaleDetail.create(
+            {
+              saleId: sale.id,
+              productId: item.productId,
+              quantity: item.quantity,
+              unitPrice: product.salePrice,
+              discountPercent: item.discountPercent,
+            } as any,
+            { transaction: t },
+          );
 
           // Decrease stock
           await product.update({ stock: product.stock - item.quantity }, { transaction: t });
 
           // Calculate line subtotal (with discount)
-          const lineSubtotal = roundTo2(item.quantity * Number(product.salePrice) * (1 - item.discountPercent / 100));
+          const lineSubtotal = roundTo2(
+            item.quantity * Number(product.salePrice) * (1 - item.discountPercent / 100),
+          );
           itemsSubtotal = roundTo2(itemsSubtotal + lineSubtotal);
 
           return detail;
@@ -95,12 +107,15 @@ export class SaleService {
       const taxBase = roundTo2(totalAfterDiscount / (1 + IGV_RATE));
       const taxAmount = roundTo2(totalAfterDiscount - taxBase);
 
-      await sale.update({
-        subtotal: itemsSubtotal,
-        taxBase,
-        taxAmount,
-        total: totalAfterDiscount,
-      }, { transaction: t });
+      await sale.update(
+        {
+          subtotal: itemsSubtotal,
+          taxBase,
+          taxAmount,
+          total: totalAfterDiscount,
+        },
+        { transaction: t },
+      );
 
       return {
         sale: {
@@ -139,7 +154,11 @@ export class SaleService {
         { model: User, as: 'seller', attributes: ['id', 'firstName', 'lastName'] },
         { model: Client, as: 'client', attributes: ['id', 'firstName', 'lastName'] },
         { model: PaymentMethod, as: 'paymentMethod', attributes: ['id', 'name', 'displayName'] },
-        { model: SaleDetail, as: 'details', include: [{ model: Product, as: 'product', attributes: ['id', 'name', 'code'] }] },
+        {
+          model: SaleDetail,
+          as: 'details',
+          include: [{ model: Product, as: 'product', attributes: ['id', 'name', 'code'] }],
+        },
       ],
     });
     if (!sale) throw new NotFoundError('Venta');

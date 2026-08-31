@@ -76,8 +76,12 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
 
   // Cast string columns to ENUM types
   const sequelize = queryInterface.sequelize;
-  await sequelize.query(`ALTER TABLE sale ALTER COLUMN voucher_type TYPE voucher_type USING voucher_type::voucher_type;`);
-  await sequelize.query(`ALTER TABLE sale ALTER COLUMN sale_channel TYPE sale_channel USING sale_channel::sale_channel;`);
+  await sequelize.query(
+    `ALTER TABLE sale ALTER COLUMN voucher_type TYPE voucher_type USING voucher_type::voucher_type;`,
+  );
+  await sequelize.query(
+    `ALTER TABLE sale ALTER COLUMN sale_channel TYPE sale_channel USING sale_channel::sale_channel;`,
+  );
 
   // Sale detail
   await queryInterface.createTable('sale_detail', {
@@ -110,9 +114,15 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
   });
 
   // Generated column and constraints
-  await sequelize.query(`ALTER TABLE sale_detail ADD COLUMN subtotal DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED;`);
-  await sequelize.query(`ALTER TABLE sale_detail ADD CONSTRAINT chk_sale_detail_qty CHECK (quantity > 0);`);
-  await sequelize.query(`ALTER TABLE sale_detail ADD CONSTRAINT chk_sale_detail_price CHECK (unit_price > 0);`);
+  await sequelize.query(
+    `ALTER TABLE sale_detail ADD COLUMN subtotal DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED;`,
+  );
+  await sequelize.query(
+    `ALTER TABLE sale_detail ADD CONSTRAINT chk_sale_detail_qty CHECK (quantity > 0);`,
+  );
+  await sequelize.query(
+    `ALTER TABLE sale_detail ADD CONSTRAINT chk_sale_detail_price CHECK (unit_price > 0);`,
+  );
 
   // Indexes
   await queryInterface.addIndex('sale', ['seller_id'], { name: 'idx_sale_seller' });
