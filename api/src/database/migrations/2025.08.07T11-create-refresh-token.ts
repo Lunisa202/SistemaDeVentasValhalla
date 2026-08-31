@@ -43,7 +43,9 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
   });
 
   await queryInterface.addIndex('refresh_token', ['user_id'], { name: 'idx_refresh_token_user' });
-  await queryInterface.addIndex('refresh_token', ['expires_at'], { name: 'idx_refresh_token_expires' });
+  await queryInterface.addIndex('refresh_token', ['expires_at'], {
+    name: 'idx_refresh_token_expires',
+  });
 }
 
 export async function down({ context: queryInterface }: { context: QueryInterface }) {

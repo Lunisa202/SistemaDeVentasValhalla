@@ -58,7 +58,12 @@ Edita `.env` con los datos de tu base de datos (ver sección de migración más 
 | `pnpm run typecheck` | Verificar tipos sin compilar |
 | `pnpm run migrate` | Ejecutar migraciones pendientes |
 | `pnpm run seed` | Insertar datos iniciales |
-| `pnpm run lint` | Ejecutar ESLint |
+| `pnpm run lint` | Ejecutar ESLint (detección de bugs y malas prácticas) |
+| `pnpm run lint:fix` | ESLint con auto-corrección |
+| `pnpm run format` | Formatear código con Prettier |
+| `pnpm run format:check` | Verificar formato sin modificar |
+
+> **Tooling de calidad:** El proyecto usa TypeScript 5.7 (versión estable), ESLint 9 (flat config) + typescript-eslint 8, y Prettier 3. ESLint detecta bugs/malas prácticas; Prettier maneja el formato. Ambos separados vía `eslint-config-prettier`.
 
 ### Estructura del backend
 
@@ -168,7 +173,35 @@ api/src/
 |--------|------|-------------|------|
 | GET | `/sales` | Listar ventas (paginado) | Admin/Seller |
 | GET | `/sales/:id` | Obtener venta con detalles | Admin/Seller |
-| POST | `/sales` | Registrar venta (disminuye stock) | Admin/Seller |
+| POST | `/sales` | Registrar venta (disminuye stock, requiere caja abierta) | Admin/Seller |
+
+### Caja (Cash Register)
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/cash-register/status` | ¿Hay caja abierta? (gate del frontend) | Admin/Seller |
+| GET | `/cash-register/current` | Caja abierta actual | Admin/Seller |
+| GET | `/cash-register` | Historial de cajas (paginado) | Admin/Seller |
+| GET | `/cash-register/:id` | Caja con resumen por método de pago | Admin/Seller |
+| POST | `/cash-register/open` | Abrir caja (falla si ya hay una abierta) | Admin/Seller |
+| POST | `/cash-register/close` | Cerrar caja (calcula resumen y diferencia) | Admin/Seller |
+
+> Modelo de caja compartida: una sola caja abierta a la vez. No se pueden registrar ventas sin caja abierta.
+
+### Analytics / Dashboard
+
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| GET | `/analytics/overview` | Resumen de hoy / semana / mes | Admin |
+| GET | `/analytics/sales-by-period` | Serie temporal (day/week/month) | Admin |
+| GET | `/analytics/top-products` | Productos más vendidos | Admin |
+| GET | `/analytics/sales-by-payment-method` | Ventas por método de pago | Admin |
+| GET | `/analytics/sales-by-category` | Ventas por categoría | Admin |
+| GET | `/analytics/profit-loss` | Ventas vs compras (flujo de caja) | Admin |
+| GET | `/analytics/low-stock` | Productos con stock bajo | Admin |
+| GET | `/analytics/sales-by-seller` | Rendimiento por vendedor | Admin |
+
+> Los endpoints de analytics aceptan `?from=YYYY-MM-DD&to=YYYY-MM-DD`. Sin fechas, usan un rango por defecto (últimos 30 días).
 
 > Todas las rutas están prefijadas con `/api/v1/`
 

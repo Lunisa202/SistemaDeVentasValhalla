@@ -18,10 +18,12 @@ app.use(helmet());
 app.use(rateLimiter);
 
 // ─── CORS ───────────────────────────────────────────────────
-app.use(cors({
-  origin: environment.ALLOWED_ORIGINS,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: environment.ALLOWED_ORIGINS,
+    credentials: true,
+  }),
+);
 
 // ─── Body parsing ───────────────────────────────────────────
 app.use(express.json());
@@ -29,13 +31,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ─── Logging ────────────────────────────────────────────────
-app.use(pinoHttp({
-  logger,
-  redact: {
-    paths: ['req.headers.authorization', 'req.headers.cookie'],
-    censor: '[REDACTED]',
-  },
-}));
+app.use(
+  pinoHttp({
+    logger,
+    redact: {
+      paths: ['req.headers.authorization', 'req.headers.cookie'],
+      censor: '[REDACTED]',
+    },
+  }),
+);
 
 // ─── Swagger docs ───────────────────────────────────────────
 setupSwagger(app);

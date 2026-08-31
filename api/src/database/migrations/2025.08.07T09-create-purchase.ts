@@ -53,7 +53,9 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
 
   // Use raw SQL for ENUM column type cast and generated column
   const sequelize = queryInterface.sequelize;
-  await sequelize.query(`ALTER TABLE purchase ALTER COLUMN voucher_type TYPE voucher_type USING voucher_type::voucher_type;`);
+  await sequelize.query(
+    `ALTER TABLE purchase ALTER COLUMN voucher_type TYPE voucher_type USING voucher_type::voucher_type;`,
+  );
 
   await queryInterface.createTable('purchase_detail', {
     id: {
@@ -85,15 +87,23 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
   });
 
   // Add generated column and CHECK constraints via raw SQL
-  await sequelize.query(`ALTER TABLE purchase_detail ADD COLUMN subtotal DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED;`);
-  await sequelize.query(`ALTER TABLE purchase_detail ADD CONSTRAINT chk_purchase_detail_qty CHECK (quantity > 0);`);
-  await sequelize.query(`ALTER TABLE purchase_detail ADD CONSTRAINT chk_purchase_detail_price CHECK (unit_price > 0);`);
+  await sequelize.query(
+    `ALTER TABLE purchase_detail ADD COLUMN subtotal DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED;`,
+  );
+  await sequelize.query(
+    `ALTER TABLE purchase_detail ADD CONSTRAINT chk_purchase_detail_qty CHECK (quantity > 0);`,
+  );
+  await sequelize.query(
+    `ALTER TABLE purchase_detail ADD CONSTRAINT chk_purchase_detail_price CHECK (unit_price > 0);`,
+  );
 
   // Indexes
   await queryInterface.addIndex('purchase', ['user_id'], { name: 'idx_purchase_user' });
   await queryInterface.addIndex('purchase', ['provider_id'], { name: 'idx_purchase_provider' });
   await queryInterface.addIndex('purchase', ['purchased_at'], { name: 'idx_purchase_date' });
-  await queryInterface.addIndex('purchase_detail', ['purchase_id'], { name: 'idx_purchase_detail_purchase' });
+  await queryInterface.addIndex('purchase_detail', ['purchase_id'], {
+    name: 'idx_purchase_detail_purchase',
+  });
 }
 
 export async function down({ context: queryInterface }: { context: QueryInterface }) {

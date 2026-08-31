@@ -11,7 +11,10 @@ export class ProviderRepository {
     { model: Company, as: 'company', attributes: ['id', 'name', 'taxId'] },
   ];
 
-  async findAll(params: PaginationParams, filters?: { isActive?: boolean; companyId?: string; search?: string }) {
+  async findAll(
+    params: PaginationParams,
+    filters?: { isActive?: boolean; companyId?: string; search?: string },
+  ) {
     const conditions: any[] = [];
 
     if (filters?.isActive !== undefined) conditions.push({ isActive: filters.isActive });

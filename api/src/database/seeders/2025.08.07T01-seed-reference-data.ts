@@ -60,11 +60,36 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
   // ─── Product Categories ───────────────────────────────
   // product_category has no UNIQUE constraint on name, so we guard explicitly.
   await insertIfMissing(queryInterface, 'product_category', [
-    { name: 'Gaseosas', description: 'Bebidas carbonatadas y azucaradas', created_at: new Date(), updated_at: new Date() },
-    { name: 'Licores', description: 'Bebidas alcohólicas', created_at: new Date(), updated_at: new Date() },
-    { name: 'Piqueos', description: 'Snacks salados', created_at: new Date(), updated_at: new Date() },
-    { name: 'Golosinas', description: 'Dulces y otros', created_at: new Date(), updated_at: new Date() },
-    { name: 'Bebidas no alcohólicas', description: 'Todo tipo de bebidas sin alcohol', created_at: new Date(), updated_at: new Date() },
+    {
+      name: 'Gaseosas',
+      description: 'Bebidas carbonatadas y azucaradas',
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
+    {
+      name: 'Licores',
+      description: 'Bebidas alcohólicas',
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
+    {
+      name: 'Piqueos',
+      description: 'Snacks salados',
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
+    {
+      name: 'Golosinas',
+      description: 'Dulces y otros',
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
+    {
+      name: 'Bebidas no alcohólicas',
+      description: 'Todo tipo de bebidas sin alcohol',
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
   ]);
 }
 

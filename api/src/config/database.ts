@@ -34,9 +34,7 @@ export const sequelize = new Sequelize({
   database: environment.DB_NAME,
   username: environment.DB_USER,
   password: environment.DB_PASS,
-  logging: environment.NODE_ENV === 'development'
-    ? (msg) => logger.debug(msg)
-    : false,
+  logging: environment.NODE_ENV === 'development' ? (msg) => logger.debug(msg) : false,
   models: [
     Role,
     DocumentType,
@@ -67,9 +65,7 @@ export const sequelize = new Sequelize({
     acquire: 30000,
     idle: 10000,
   },
-  dialectOptions: environment.DB_SSL
-    ? { ssl: { require: true, rejectUnauthorized: false } }
-    : {},
+  dialectOptions: environment.DB_SSL ? { ssl: { require: true, rejectUnauthorized: false } } : {},
 });
 
 /**

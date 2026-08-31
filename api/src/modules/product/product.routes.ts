@@ -174,7 +174,11 @@ productRoutes.get('/:id', asyncHandler(ProductController.getById));
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-productRoutes.post('/', validateSchema(createProductSchema), asyncHandler(ProductController.create));
+productRoutes.post(
+  '/',
+  validateSchema(createProductSchema),
+  asyncHandler(ProductController.create),
+);
 
 /**
  * @swagger
@@ -224,7 +228,11 @@ productRoutes.post('/', validateSchema(createProductSchema), asyncHandler(Produc
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-productRoutes.patch('/:id', validateSchema(updateProductSchema), asyncHandler(ProductController.update));
+productRoutes.patch(
+  '/:id',
+  validateSchema(updateProductSchema),
+  asyncHandler(ProductController.update),
+);
 
 /**
  * @swagger

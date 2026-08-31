@@ -125,7 +125,11 @@ companyRoutes.get('/:id', asyncHandler(CompanyController.getById));
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-companyRoutes.post('/', validateSchema(createCompanySchema), asyncHandler(CompanyController.create));
+companyRoutes.post(
+  '/',
+  validateSchema(createCompanySchema),
+  asyncHandler(CompanyController.create),
+);
 
 /**
  * @swagger
@@ -169,7 +173,11 @@ companyRoutes.post('/', validateSchema(createCompanySchema), asyncHandler(Compan
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-companyRoutes.patch('/:id', validateSchema(updateCompanySchema), asyncHandler(CompanyController.update));
+companyRoutes.patch(
+  '/:id',
+  validateSchema(updateCompanySchema),
+  asyncHandler(CompanyController.update),
+);
 
 /**
  * @swagger

@@ -45,11 +45,12 @@ async function run() {
       await migrator.down();
       logger.info('Last migration reverted');
       break;
-    case 'pending':
+    case 'pending': {
       const pending = await migrator.pending();
       logger.info(`Pending migrations: ${pending.length}`);
       pending.forEach((m) => logger.info(`  - ${m.name}`));
       break;
+    }
     default:
       logger.error(`Unknown command: ${command}. Use: up, down, pending`);
   }

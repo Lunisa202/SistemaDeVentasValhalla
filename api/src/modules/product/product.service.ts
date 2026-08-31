@@ -34,7 +34,8 @@ export class ProductService {
   async update(id: string, data: UpdateProductDto) {
     if (data.code) {
       const existing = await this.repository.findByCode(data.code);
-      if (existing && existing.id !== id) throw new ConflictError('El código de producto ya existe');
+      if (existing && existing.id !== id)
+        throw new ConflictError('El código de producto ya existe');
     }
     const product = await this.repository.update(id, data);
     if (!product) throw new NotFoundError('Producto');

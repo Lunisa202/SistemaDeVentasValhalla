@@ -9,7 +9,10 @@ export class ProductRepository {
     { model: ProductCategory, as: 'category', attributes: ['id', 'name', 'description'] },
   ];
 
-  async findAll(params: PaginationParams, filters?: { isActive?: boolean; categoryId?: number; search?: string }) {
+  async findAll(
+    params: PaginationParams,
+    filters?: { isActive?: boolean; categoryId?: number; search?: string },
+  ) {
     const conditions: any[] = [];
 
     if (filters?.isActive !== undefined) conditions.push({ isActive: filters.isActive });

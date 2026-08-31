@@ -8,8 +8,8 @@ import { ForbiddenError } from '../errors/forbidden.error';
  * JWT payload structure after decoding.
  */
 export interface JwtPayload {
-  id: string;         // User UUID
-  role: string;       // 'admin' | 'seller'
+  id: string; // User UUID
+  role: string; // 'admin' | 'seller'
   email: string;
 }
 

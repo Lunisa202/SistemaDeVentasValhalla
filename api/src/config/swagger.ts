@@ -8,14 +8,13 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'Valhalla Sales System API',
       version: '1.0.0',
-      description: 'REST API para el sistema de ventas Valhalla. Gestión de productos, ventas, compras, caja y analytics.',
+      description:
+        'REST API para el sistema de ventas Valhalla. Gestión de productos, ventas, compras, caja y analytics.',
       contact: {
         name: 'API Support',
       },
     },
-    servers: [
-      { url: '/api/v1', description: 'API v1' },
-    ],
+    servers: [{ url: '/api/v1', description: 'API v1' }],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -151,7 +150,15 @@ const options: swaggerJsdoc.Options = {
         },
         CreateUser: {
           type: 'object',
-          required: ['firstName', 'lastName', 'identityDocument', 'email', 'password', 'roleId', 'documentTypeId'],
+          required: [
+            'firstName',
+            'lastName',
+            'identityDocument',
+            'email',
+            'password',
+            'roleId',
+            'documentTypeId',
+          ],
           properties: {
             firstName: { type: 'string', minLength: 2, maxLength: 45, example: 'Juan' },
             lastName: { type: 'string', minLength: 2, maxLength: 45, example: 'Pérez' },
@@ -222,7 +229,15 @@ const options: swaggerJsdoc.Options = {
         },
         CreateProvider: {
           type: 'object',
-          required: ['firstName', 'lastName', 'identityDocument', 'email', 'phone', 'documentTypeId', 'companyId'],
+          required: [
+            'firstName',
+            'lastName',
+            'identityDocument',
+            'email',
+            'phone',
+            'documentTypeId',
+            'companyId',
+          ],
           properties: {
             firstName: { type: 'string', minLength: 2, maxLength: 45, example: 'Carlos' },
             lastName: { type: 'string', minLength: 2, maxLength: 45, example: 'López' },
@@ -292,7 +307,7 @@ const options: swaggerJsdoc.Options = {
             id: { type: 'string', format: 'uuid' },
             name: { type: 'string', example: 'Coca Cola 500ml' },
             code: { type: 'string', example: '7750236000125' },
-            salePrice: { type: 'number', example: 3.50 },
+            salePrice: { type: 'number', example: 3.5 },
             stock: { type: 'integer', example: 48 },
             categoryId: { type: 'integer', example: 1 },
             isActive: { type: 'boolean', example: true },
@@ -305,7 +320,7 @@ const options: swaggerJsdoc.Options = {
           properties: {
             name: { type: 'string', minLength: 2, maxLength: 100, example: 'Coca Cola 500ml' },
             code: { type: 'string', minLength: 3, maxLength: 13, example: '7750236000125' },
-            salePrice: { type: 'number', minimum: 0.01, example: 3.50 },
+            salePrice: { type: 'number', minimum: 0.01, example: 3.5 },
             stock: { type: 'integer', minimum: 0, default: 0, example: 24 },
             categoryId: { type: 'integer', example: 1 },
           },
@@ -337,10 +352,18 @@ const options: swaggerJsdoc.Options = {
                 properties: {
                   productId: { type: 'string', format: 'uuid' },
                   quantity: { type: 'integer', minimum: 1, example: 10 },
-                  unitPrice: { type: 'number', minimum: 0.01, example: 2.50 },
+                  unitPrice: { type: 'number', minimum: 0.01, example: 2.5 },
                 },
               },
             },
+          },
+        },
+        // ─── Analytics Schemas ──────────────────────────────────────
+        AnalyticsWindow: {
+          type: 'object',
+          properties: {
+            totalSales: { type: 'number', example: 1250.5 },
+            transactionCount: { type: 'integer', example: 42 },
           },
         },
         // ─── Cash Register Schemas ──────────────────────────────────
@@ -350,10 +373,10 @@ const options: swaggerJsdoc.Options = {
             id: { type: 'integer', example: 3 },
             openedBy: { type: 'string', format: 'uuid' },
             closedBy: { type: 'string', format: 'uuid', nullable: true },
-            openingAmount: { type: 'number', example: 100.00 },
-            expectedAmount: { type: 'number', nullable: true, example: 440.00 },
-            actualAmount: { type: 'number', nullable: true, example: 438.00 },
-            difference: { type: 'number', nullable: true, example: -2.00 },
+            openingAmount: { type: 'number', example: 100.0 },
+            expectedAmount: { type: 'number', nullable: true, example: 440.0 },
+            actualAmount: { type: 'number', nullable: true, example: 438.0 },
+            difference: { type: 'number', nullable: true, example: -2.0 },
             status: { type: 'string', enum: ['OPEN', 'CLOSED'], example: 'CLOSED' },
             notes: { type: 'string', nullable: true },
             openedAt: { type: 'string', format: 'date-time' },
@@ -365,7 +388,7 @@ const options: swaggerJsdoc.Options = {
                 properties: {
                   id: { type: 'integer' },
                   paymentMethodId: { type: 'integer', example: 1 },
-                  totalSales: { type: 'number', example: 340.00 },
+                  totalSales: { type: 'number', example: 340.0 },
                   transactionCount: { type: 'integer', example: 12 },
                   paymentMethod: { $ref: '#/components/schemas/PaymentMethod' },
                 },
@@ -376,7 +399,7 @@ const options: swaggerJsdoc.Options = {
         OpenCashRegister: {
           type: 'object',
           properties: {
-            openingAmount: { type: 'number', minimum: 0, default: 0, example: 100.00 },
+            openingAmount: { type: 'number', minimum: 0, default: 0, example: 100.0 },
             notes: { type: 'string', maxLength: 500, example: 'Turno mañana' },
           },
         },
@@ -384,7 +407,7 @@ const options: swaggerJsdoc.Options = {
           type: 'object',
           required: ['actualAmount'],
           properties: {
-            actualAmount: { type: 'number', minimum: 0, example: 438.00 },
+            actualAmount: { type: 'number', minimum: 0, example: 438.0 },
             notes: { type: 'string', maxLength: 500, example: 'Faltante de S/. 2' },
           },
         },
@@ -398,7 +421,7 @@ const options: swaggerJsdoc.Options = {
             voucherCode: { type: 'string', minLength: 1, maxLength: 30, example: 'B001-00000047' },
             saleChannel: { type: 'string', enum: ['IN_STORE', 'ONLINE'] },
             paymentMethodId: { type: 'integer', example: 1 },
-            discountAmount: { type: 'number', minimum: 0, default: 0, example: 5.00 },
+            discountAmount: { type: 'number', minimum: 0, default: 0, example: 5.0 },
             products: {
               type: 'array',
               minItems: 1,
@@ -408,7 +431,13 @@ const options: swaggerJsdoc.Options = {
                 properties: {
                   productId: { type: 'string', format: 'uuid' },
                   quantity: { type: 'integer', minimum: 1, example: 2 },
-                  discountPercent: { type: 'number', minimum: 0, maximum: 100, default: 0, example: 10 },
+                  discountPercent: {
+                    type: 'number',
+                    minimum: 0,
+                    maximum: 100,
+                    default: 0,
+                    example: 10,
+                  },
                 },
               },
             },
@@ -428,9 +457,13 @@ const swaggerSpec = swaggerJsdoc(options);
  */
 export function setupSwagger(app: Express): void {
   // Swagger UI
-  app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: 'Valhalla API Docs',
-  }));
+  app.use(
+    '/api/v1/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      customSiteTitle: 'Valhalla API Docs',
+    }),
+  );
 
   // JSON spec (useful for frontend type generation)
   app.get('/api/v1/docs.json', (_req, res) => {

@@ -168,7 +168,11 @@ clientRoutes.post('/', validateSchema(createClientSchema), asyncHandler(ClientCo
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-clientRoutes.patch('/:id', validateSchema(updateClientSchema), asyncHandler(ClientController.update));
+clientRoutes.patch(
+  '/:id',
+  validateSchema(updateClientSchema),
+  asyncHandler(ClientController.update),
+);
 
 /**
  * @swagger

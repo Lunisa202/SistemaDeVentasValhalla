@@ -56,8 +56,12 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
   });
 
   // Add CHECK constraint for discount_percent
-  await sequelize.query(`ALTER TABLE sale_detail ADD CONSTRAINT chk_sale_detail_discount CHECK (discount_percent >= 0 AND discount_percent <= 100);`);
-  await sequelize.query(`ALTER TABLE sale ADD CONSTRAINT chk_sale_discount CHECK (discount_amount >= 0);`);
+  await sequelize.query(
+    `ALTER TABLE sale_detail ADD CONSTRAINT chk_sale_detail_discount CHECK (discount_percent >= 0 AND discount_percent <= 100);`,
+  );
+  await sequelize.query(
+    `ALTER TABLE sale ADD CONSTRAINT chk_sale_discount CHECK (discount_amount >= 0);`,
+  );
 }
 
 export async function down({ context: queryInterface }: { context: QueryInterface }) {
@@ -70,8 +74,12 @@ export async function down({ context: queryInterface }: { context: QueryInterfac
   await queryInterface.removeColumn('sale', 'subtotal');
 
   // Remove discount from sale_detail and restore original subtotal
-  await sequelize.query(`ALTER TABLE sale_detail DROP CONSTRAINT IF EXISTS chk_sale_detail_discount;`);
+  await sequelize.query(
+    `ALTER TABLE sale_detail DROP CONSTRAINT IF EXISTS chk_sale_detail_discount;`,
+  );
   await sequelize.query(`ALTER TABLE sale_detail DROP COLUMN subtotal;`);
   await sequelize.query(`ALTER TABLE sale_detail DROP COLUMN discount_percent;`);
-  await sequelize.query(`ALTER TABLE sale_detail ADD COLUMN subtotal DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED;`);
+  await sequelize.query(
+    `ALTER TABLE sale_detail ADD COLUMN subtotal DECIMAL(10,2) GENERATED ALWAYS AS (quantity * unit_price) STORED;`,
+  );
 }

@@ -70,7 +70,9 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
 
   // CHECK constraint for status
   const sequelize = queryInterface.sequelize;
-  await sequelize.query(`ALTER TABLE cash_register ADD CONSTRAINT chk_cash_register_status CHECK (status IN ('OPEN', 'CLOSED'));`);
+  await sequelize.query(
+    `ALTER TABLE cash_register ADD CONSTRAINT chk_cash_register_status CHECK (status IN ('OPEN', 'CLOSED'));`,
+  );
 
   // Summary table
   await queryInterface.createTable('cash_register_summary', {
@@ -105,14 +107,20 @@ export async function up({ context: queryInterface }: { context: QueryInterface 
   });
 
   // Unique constraint: one entry per payment method per cash register
-  await queryInterface.addIndex('cash_register_summary', ['cash_register_id', 'payment_method_id'], {
-    name: 'idx_cash_summary_unique',
-    unique: true,
-  });
+  await queryInterface.addIndex(
+    'cash_register_summary',
+    ['cash_register_id', 'payment_method_id'],
+    {
+      name: 'idx_cash_summary_unique',
+      unique: true,
+    },
+  );
 
   // Indexes
   await queryInterface.addIndex('cash_register', ['status'], { name: 'idx_cash_register_status' });
-  await queryInterface.addIndex('cash_register', ['opened_at'], { name: 'idx_cash_register_opened_at' });
+  await queryInterface.addIndex('cash_register', ['opened_at'], {
+    name: 'idx_cash_register_opened_at',
+  });
 }
 
 export async function down({ context: queryInterface }: { context: QueryInterface }) {
